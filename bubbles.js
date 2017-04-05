@@ -119,15 +119,18 @@ function grid(columns, ball_radius, gap, offx, offy)
     this.taken = 0          //how much time has elapsed since the balls started moving
     this.current_move = 0   //how far have the balls moved so far
     
-    this.move_down = function (time)
+    this.move_down = function (time, rows=1)
     {
-        this.target = this.ball_size + this.gap;
+        this.target = (this.ball_size + this.gap) * rows;
         this.time = time
     }
     
     //Draws the grid on the screen
     this.draw = function (elapsed)
     {
+        loc = this.get_pos(thing.x, thing.y)
+        loc = [Math.round(loc[0]), Math.round(loc[1])]
+        
         if(this.time != 0) 
         {
             dy = this.target / this.time * elapsed;
@@ -157,14 +160,29 @@ function grid(columns, ball_radius, gap, offx, offy)
         }
     }
     
+    //Gets the x and y pixels of a location
+    this.get_loc = function (row, col)
+    {
+        x = this.gap + this.offx + (this.gap + this.ball_size) * col
+        y = this.gap - (this.gap + this.ball_size) * (row) + this.offy + this.movement
+        return [x,y]
+    }
+    
+    //Gets a row, col location from pixels
+    this.get_pos = function (x, y)
+    {
+        col = (x - this.gap - this.offy) / (this.gap + this.ball_size)
+        row = (y - this.gap - this.offy - this.movement) / -(this.gap + this.ball_size)
+        return [row, col]
+    }
+    
     //Adds a single ball to the grid
     this.add_ball = function (color)
     {
         row = this.rows;
         col = this.next_col;
-        x = this.gap + (this.gap + this.ball_size) * col + this.offx;
-        y = this.gap - (this.gap + this.ball_size * (row - 1) + this.offy) + this.movement;
-        if (row % 2 == 0)
+        [x, y] = this.get_loc(row, col)
+        if (row % 2 == 1)
             x += this.ball_size / 2;
         this.balls[[row, col]] = new ball(x, y, color, 0, 0, ball_radius);
             
@@ -174,6 +192,17 @@ function grid(columns, ball_radius, gap, offx, offy)
             this.rows ++;
             this.next_col = 0;
         }
+    }
+    
+    //Removes a ball at a given row and column
+    this.remove_ball = function (row, col)
+    {
+        if(this.in_grid(row, col))
+        {
+            delete this.balls[[row, col]]
+            return true
+        }
+        return false
     }
     
     //Checks if there is a ball at a given location in the grid
@@ -222,22 +251,22 @@ function grid(columns, ball_radius, gap, offx, offy)
     }
 }
 
+var thing = new ball(150, 150, "red", 100, 50, 10)
+add_object(thing)
 //setup the scene
 function setup()
 {
     //Get ball for game
-    var thing = new ball(50, 50, "red", 100, 200, 10);
     //Add ball to scene
-    add_object(thing)
     
     //Create game grid
     var game_grid = new grid(22, 10, 1, 14, 10);
     add_object(game_grid)
     //add a ball to the grid
-    for(var i = 0; i < 44; i++)
-        game_grid.add_ball("green");
+    for(var i = 0; i < 66; i++)
+        game_grid.add_ball("blue");
     
-    game_grid.move_down(0.1);
+    game_grid.move_down(0.2, 2);
 }
 
 //set draw to every 20 ms
