@@ -35,13 +35,13 @@ function draw()
     clear();
     
     //get current time
-    var date = new Date();
-    var time = date.getTime();
+    var date = new Date()
+    var time = date.getTime()
     //calculate elapsed (in seconds)
     var elapsed = (time - prev_time) / 1000.0
     
     //get keys
-    object_keys = Object.keys(game_objects);
+    object_keys = Object.keys(game_objects)
     //iterate over the game objects and draw them all
     for(var index = 0; index < object_keys.length; index++)
     {
@@ -101,31 +101,89 @@ function ball(x, y, color, speedx, speedy, radius)
 }
 
 //function to make a grid
-function grid()
+function grid(columns, ball_radius, gap, offx, offy)
 {
+    this.columns = columns
+    this.offx = offx
+    this.offy = offy
     this.rows = 0
+    this.ball_radius = ball_radius
+    this.ball_size = ball_radius * 2
+    this.next_col = 0
+    this.gap = gap
     this.balls = {}  
+    this.movement = 0
+    //values to save state of moving down
+    this.target = 0         //how far should the balls move
+    this.time = 0           //how long do the balls have to move there
+    this.taken = 0          //how much time has elapsed since the balls started moving
+    this.current_move = 0   //how far have the balls moved so far
     
-    function add_row(balls)
+    this.move_down = function (time)
     {
-        for(var index = 0; index < balls.length; index++)
+        this.target = this.ball_size + this.gap;
+        this.time = time
+    }
+    
+    //Draws the grid on the screen
+    this.draw = function (elapsed)
+    {
+        if(this.time != 0) 
         {
-            this.add_ball(balls[index], rows, col);
+            dy = this.target / this.time * elapsed;
+            if(this.taken + elapsed >= this.time)
+            {
+                dy = this.target - this.current_move
+                this.target = 0;
+                this.time = 0;
+                this.taken = 0
+                this.current_move = 0
+            }
+            else
+            {
+                this.current_move += dy
+                this.taken += elapsed
+            }
+            this.translate_balls(0, dy)
+            this.movement += dy
         }
-        rows += 1;
+    
+        //get balls
+        ball_locs = Object.keys(this.balls)
+        //iterate over the balls and draw them all
+        for(var index = 0; index < ball_locs.length; index++)
+        {
+            this.balls[ball_locs[index]].draw(elapsed)
+        }
     }
     
-    function add_ball(ball, row, col)
+    //Adds a single ball to the grid
+    this.add_ball = function (color)
     {
-        this.balls[[row, col]] = ball
+        row = this.rows;
+        col = this.next_col;
+        x = this.gap + (this.gap + this.ball_size) * col + this.offx;
+        y = this.gap - (this.gap + this.ball_size * (row - 1) + this.offy) + this.movement;
+        if (row % 2 == 0)
+            x += this.ball_size / 2;
+        this.balls[[row, col]] = new ball(x, y, color, 0, 0, ball_radius);
+            
+        this.next_col++;
+        if(this.next_col >= this.columns)
+        {
+            this.rows ++;
+            this.next_col = 0;
+        }
     }
     
-    function in_grid(row, col)
+    //Checks if there is a ball at a given location in the grid
+    this.in_grid = function (row, col)
     {
         return [row, col] in balls
     }
     
-    function get_adjacent(row, col)
+    //Gets the adjacent locations to a spot on the grid as a list (with a hex layout)
+    this.get_adjacent = function (row, col)
     {
         //(0,0) (0,1) (0,2)
         //  (1,0) (1,1) (1,2)
@@ -151,7 +209,8 @@ function grid()
         }
     }
     
-    function translate_balls(dx, dy)
+    //Moves all the balls in a specific direction
+    this.translate_balls = function (dx, dy)
     {
         ball_keys = Object.keys(this.balls)
         for(var index = 0; index < ball_keys.length; index++)
@@ -171,8 +230,16 @@ function setup()
     //Add ball to scene
     add_object(thing)
     
+    //Create game grid
+    var game_grid = new grid(22, 10, 1, 14, 10);
+    add_object(game_grid)
+    //add a ball to the grid
+    for(var i = 0; i < 44; i++)
+        game_grid.add_ball("green");
+    
+    game_grid.move_down(0.1);
 }
 
 //set draw to every 20 ms
 setInterval(draw, delay)
-
+//draw()
