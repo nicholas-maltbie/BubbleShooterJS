@@ -64,11 +64,11 @@ function clear()
 }
 
 //function to make a ball
-function ball(x, y, color, speedx, speedy, radius)
+function ball(x_start, y_start, color, speedx, speedy, radius)
 {
     //Save values for ball
-    this.x = x
-    this.y = y
+    this.x = x_start
+    this.y = y_start
     this.speedx = speedx
     this.speedy = speedy
     this.color = color
@@ -111,6 +111,10 @@ function ball(x, y, color, speedx, speedy, radius)
         ctx.fillStyle = this.color
         ctx.fill()
         ctx.closePath()
+        
+        if(this.color == "red"){
+            console.log("THING", this.speedx)
+        }
     }
 }
 
@@ -133,6 +137,9 @@ function grid(columns, ball_radius, gap, offx, offy)
     this.taken = 0          //how much time has elapsed since the balls started moving
     this.current_move = 0   //how far have the balls moved so far
     
+    
+    this.thingy = true
+    
     this.move_down = function (time, rows=1)
     {
         this.target = (this.ball_size + this.gap) * rows;
@@ -143,7 +150,7 @@ function grid(columns, ball_radius, gap, offx, offy)
     {
         loc = this.get_pos(ball.x, ball.y)
         row = Math.round(loc[0])
-        col = Math.round(loc[1])
+        col = Math.floor(loc[1])
         adj = this.get_adjacent(row, col)
         adj.push([row, col])
         for (index = 0; index < adj.length; index++)
@@ -151,6 +158,7 @@ function grid(columns, ball_radius, gap, offx, offy)
             loc = adj[index]
             if (this.in_grid(loc[0], loc[1]) && ball.intersect(this.balls[[loc[0], loc[1]]]))
             {
+                this.thingy = false
                 this.insert_ball(ball, row, col)
                 return true
             }
@@ -162,7 +170,6 @@ function grid(columns, ball_radius, gap, offx, offy)
     //Draws the grid on the screen
     this.draw = function (elapsed)
     {
-        console.log(this.intersect_grid(thing))
         if(this.time != 0) 
         {
             dy = this.target / this.time * elapsed;
@@ -182,6 +189,9 @@ function grid(columns, ball_radius, gap, offx, offy)
             this.translate_balls(0, dy)
             this.movement += dy
         }
+        if (this.thingy)
+            this.intersect_grid(thing)
+        //console.log()
     }
     
     //Gets the x and y pixels of a location
@@ -191,7 +201,7 @@ function grid(columns, ball_radius, gap, offx, offy)
         if (Math.abs(row) % 2 == 1)
             x += this.ball_size / 2;
         y = this.gap - (this.gap + this.ball_size) * (row) + this.offy + this.movement
-        return [x,y]
+        return [x, y]
     }
     
     //Gets a row, col location from pixels
@@ -223,9 +233,18 @@ function grid(columns, ball_radius, gap, offx, offy)
     //inserts a ball into the grid at a specific location
     this.insert_ball = function (ball, row, col)
     {
+        if (col < 0)
+            col = 0
+        else if(col >= this.columns)
+            col = this.columns - 1;
+    
+        loc = this.get_loc(row, col);
+        console.log(loc)
+        ball.x = loc[0]
+        ball.y = loc[1]
         ball.speedx = 0
+        console.log(ball.speedx)
         ball.speedy = 0
-        //[x, y] = this.get_loc(row, col)
         //console.log(row + " " + col + " " + "; " + x + " " + y + "; " + ball.x + " " + ball.y)
         this.balls[[row, col]] = ball
     }
@@ -288,7 +307,7 @@ function grid(columns, ball_radius, gap, offx, offy)
     }
 }
 
-var thing = new ball(150, 150, "red", 10, -30, 10)
+var thing = new ball(150, 150, "red", 500, -27, 10)
 add_object(thing)
 //setup the scene
 function setup()
