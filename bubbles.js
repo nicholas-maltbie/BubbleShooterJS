@@ -10,6 +10,9 @@ var prev_time = new Date().getTime()
 var game_objects = {}
 var added = 0
 
+//Max elapsed time per frame
+var max_elapsed = 25
+
 //call setup function
 setup()
 
@@ -39,13 +42,15 @@ function draw()
     var time = date.getTime()
     //calculate elapsed (in seconds)
     var elapsed = (time - prev_time) / 1000.0
+    elapsed = Math.min(elapsed, max_elapsed)
     
     //get keys
     object_keys = Object.keys(game_objects)
     //iterate over the game objects and draw them all
     for(var index = 0; index < object_keys.length; index++)
     {
-        game_objects[object_keys[index]].draw(elapsed)
+        if (object_keys[index] in game_objects)
+            game_objects[object_keys[index]].draw(elapsed)
     }
     
     //update previous time
@@ -138,7 +143,7 @@ function grid(columns, ball_radius, gap, offx, offy)
     {
         loc = this.get_pos(ball.x, ball.y)
         row = Math.round(loc[0])
-        col = Math.floor(loc[1])
+        col = Math.round(loc[1])
         adj = this.get_adjacent(row, col)
         adj.push([row, col])
         for (index = 0; index < adj.length; index++)
@@ -146,6 +151,7 @@ function grid(columns, ball_radius, gap, offx, offy)
             loc = adj[index]
             if (this.in_grid(loc[0], loc[1]) && ball.intersect(this.balls[[loc[0], loc[1]]]))
             {
+                this.insert_ball(ball, row, col)
                 return true
             }
         }
@@ -176,14 +182,6 @@ function grid(columns, ball_radius, gap, offx, offy)
             this.translate_balls(0, dy)
             this.movement += dy
         }
-    
-        //get balls
-        ball_locs = Object.keys(this.balls)
-        //iterate over the balls and draw them all
-        for(var index = 0; index < ball_locs.length; index++)
-        {
-            this.balls[ball_locs[index]].draw(elapsed)
-        }
     }
     
     //Gets the x and y pixels of a location
@@ -213,7 +211,7 @@ function grid(columns, ball_radius, gap, offx, offy)
         col = this.next_col;
         [x, y] = this.get_loc(row, col)
         this.balls[[row, col]] = new ball(x, y, color, 0, 0, ball_radius);
-            
+        add_object(this.balls[[row, col]])
         this.next_col++;
         if(this.next_col >= this.columns)
         {
@@ -222,11 +220,22 @@ function grid(columns, ball_radius, gap, offx, offy)
         }
     }
     
+    //inserts a ball into the grid at a specific location
+    this.insert_ball = function (ball, row, col)
+    {
+        ball.speedx = 0
+        ball.speedy = 0
+        //[x, y] = this.get_loc(row, col)
+        //console.log(row + " " + col + " " + "; " + x + " " + y + "; " + ball.x + " " + ball.y)
+        this.balls[[row, col]] = ball
+    }
+    
     //Removes a ball at a given row and column
     this.remove_ball = function (row, col)
     {
         if(this.in_grid(row, col))
         {
+            remove_object(balls[[row,col]].id)
             delete this.balls[[row, col]]
             return true
         }
