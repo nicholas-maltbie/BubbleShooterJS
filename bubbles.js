@@ -1,6 +1,10 @@
 //Game canvas and context
 var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
+var rectangle = canvas.getBoundingClientRect();
+var mouse = {};
+//setup mouse listener
+canvas.addEventListener('mousemove', mouse_move, false)
 
 var delay = 20 //delay between frames, 20 ms
 //Get start time
@@ -15,6 +19,15 @@ var max_elapsed = 25
 
 //call setup function
 setup()
+
+//function to track mouse movement
+function mouse_move(e)
+{
+    var x = event.clientX - rectangle.left;
+    var y = event.clientY - rectangle.top;
+    mouse.x = x;
+    mouse.y = y;
+}
 
 //Adds an object and returns the object's id
 function add_object(object)
@@ -70,6 +83,10 @@ function setup()
 {
     //Get ball for game
     //Add ball to scene
+
+    //add ball shooter
+    var ball_shooter = new shooter(rectangle.width / 2, rectangle.height - 20, 10, 75);
+    add_object(ball_shooter)
 
     //Create game grid
     var game_grid = new grid(22, 10, 1, 14, 10);
