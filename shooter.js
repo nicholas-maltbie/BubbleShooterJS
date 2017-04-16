@@ -76,7 +76,7 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed)
       //If ball has been added to the grid
       if(hitGrid) {
         this.fired = null;
-        this.load('blue');
+        this.load(get_color());
       }
     }
   }

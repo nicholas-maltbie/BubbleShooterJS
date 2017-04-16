@@ -4,6 +4,9 @@ var ctx = canvas.getContext("2d");
 var rectangle = canvas.getBoundingClientRect();
 var mouse = {};
 var game_grid = null;
+
+var game_colors = ['red', 'green', 'blue', 'orange', 'magenta'];
+
 mouse.x = 0;
 mouse.y = 0;
 mouse.down = 0;
@@ -25,6 +28,11 @@ var max_elapsed = 25
 
 //call setup function
 setup()
+
+function get_color()
+{
+  return game_colors[Math.floor(Math.random() * game_colors.length)];
+}
 
 //function to track mouse movement
 function mouse_move(e)
@@ -88,7 +96,7 @@ function setup()
     //add ball shooter
     var ball_shooter = new shooter(rectangle.width / 2, rectangle.height - 20, 10, 75, 200);
     add_object(ball_shooter)
-    ball_shooter.load("blue");
+    ball_shooter.load(get_color());
     canvas.addEventListener('click', function(event) {ball_shooter.fire(ball_shooter)}, false)
 
     //Create game grid
@@ -97,7 +105,7 @@ function setup()
     add_object(game_grid)
     //add a ball to the grid
     for(var i = 0; i < 88; i++)
-        game_grid.add_ball("blue");
+        game_grid.add_ball(get_color());
 
     game_grid.move_down(.3, 3);
 }
