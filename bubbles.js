@@ -4,7 +4,7 @@ var ctx = canvas.getContext("2d");
 var rectangle = canvas.getBoundingClientRect();
 var mouse = {};
 mouse.x = 0;
-mouse.y = 1;
+mouse.y = 0;
 //setup mouse listener
 canvas.addEventListener('mousemove', mouse_move, false)
 

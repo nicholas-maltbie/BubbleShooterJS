@@ -5,6 +5,8 @@ function shooter(basex, basey, ball_size, arrow_length)
   this.basey = basey;
   this.ball_size = ball_size;
   this.arrow_length = arrow_length;
+  this.min_angle = 0;
+  this.max_angle = Math.PI;
 
   this.load = function(color)
   {
@@ -18,25 +20,28 @@ function shooter(basex, basey, ball_size, arrow_length)
     dx = mouse.x - this.basex
     dy = mouse.y - this.basey
     length = Math.sqrt(dx * dx + dy * dy)
-    lenx = dx / length * this.arrow_length;
-    leny = dy / length * this.arrow_length;
-    angle = -Math.atan2(dx, dy);
+    angle = Math.atan2(dy, dx);
+    lenx = Math.cos(angle) * this.arrow_length;
+    leny = Math.sin(angle) * this.arrow_length;
+    //Draw main section of the arrow
     ctx.beginPath();
     ctx.moveTo(this.basex, this.basey)
     ctx.lineTo(this.basex + lenx, this.basey + leny)
     ctx.stroke();
     ctx.closePath();
+    //Draw two edge lines of the arrow
     ctx.beginPath();
     ctx.moveTo(this.basex + lenx, this.basey + leny)
-    ctx.lineTo(this.basex + lenx - Math.cos(angle + Math.PI / 3) * arrow_length / 4
-        , this.basey + leny - Math.sin(angle + Math.PI / 3) * arrow_length / 4)
+    ctx.lineTo(this.basex + lenx - Math.cos(angle + Math.PI / 6) * arrow_length / 4
+        , this.basey + leny - Math.sin(angle + Math.PI / 6) * arrow_length / 4)
     ctx.stroke();
     ctx.closePath();
     ctx.beginPath();
     ctx.moveTo(this.basex + lenx, this.basey + leny)
-    ctx.lineTo(this.basex + lenx - Math.cos(angle + Math.PI * 2 / 3) * arrow_length / 4
-        , this.basey + leny - Math.sin(angle + Math.PI * 2 / 3) * arrow_length / 4)
+    ctx.lineTo(this.basex + lenx - Math.cos(angle - Math.PI / 6) * arrow_length / 4
+        , this.basey + leny - Math.sin(angle - Math.PI / 6) * arrow_length / 4)
     ctx.stroke();
     ctx.closePath();
+
   }
 }
