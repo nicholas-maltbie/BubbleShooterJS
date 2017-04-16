@@ -11,6 +11,10 @@ function grid(columns, ball_radius, gap, offx, offy)
     this.gap = gap
     this.balls = {}
     this.movement = 0
+    this.critical_mass = 3; //min size of a group for the group to be deleted
+                            //when a ball is added. Ex, if a ball is added and
+                            //there are now at least 3 balls in the group, the
+                            //gropu is removed from the grid.
     //values to save state of moving down
     this.target = 0         //how far should the balls move
     this.time = 0           //how long do the balls have to move there
@@ -65,6 +69,23 @@ function grid(columns, ball_radius, gap, offx, offy)
           return -1;
         else
           return 1;
+      }
+    }
+
+    this.color_flood = function(row, col, color, group={}) {
+      if(this.in_grid(row, col) && this.balls[[row, col]].color == color) {
+        locs = [[row, col]];
+        group[[row, col]] = 0
+        adj = this.get_adjacent(row, col)
+        for(var index = 0; index < adj.length; index++) {
+          if(!([adj[index][0], adj[index][1]] in group)) {
+            locs = locs.concat(this.color_flood(adj[index][0], adj[index][1], color, group))
+          }
+        }
+        return locs;
+      }
+      else {
+        return []
       }
     }
 
@@ -131,17 +152,23 @@ function grid(columns, ball_radius, gap, offx, offy)
     //inserts a ball into the grid at a specific location
     this.insert_ball = function (ball, row, col)
     {
-        if (col < 0)
-            col = 0
-        else if(col >= this.columns)
-            col = this.columns - 1;
-
         loc = this.get_loc(row, col);
         ball.x = loc[0]
         ball.y = loc[1]
         ball.speedx = 0
         ball.speedy = 0
         this.balls[[row, col]] = ball
+
+        //Get group of balls that this was added to
+        group = this.color_flood(row, col, ball.color);
+        //If the group has at least 3 balls in it, remove the balls from the grid
+        if (group.length >= 3)
+        {
+            for(var index = 0; index < group.length; index++)
+            {
+                this.remove_ball(group[index][0], group[index][1])
+            }
+        }
     }
 
     //Removes a ball at a given row and column
@@ -149,7 +176,7 @@ function grid(columns, ball_radius, gap, offx, offy)
     {
         if(this.in_grid(row, col))
         {
-            remove_object(balls[[row,col]].id)
+            remove_object(this.balls[[row,col]].id)
             delete this.balls[[row, col]]
             return true
         }
