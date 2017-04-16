@@ -1,16 +1,31 @@
 //Define a shooter
-function shooter(basex, basey, ball_size, arrow_length)
+function shooter(basex, basey, ball_size, arrow_length, fire_speed)
 {
   this.basex = basex;
   this.basey = basey;
   this.ball_size = ball_size;
   this.arrow_length = arrow_length;
-  this.min_angle = Math.PI / 12;
-  this.max_angle = Math.PI * 11 / 12;
+  this.min_angle = Math.PI / 24;
+  this.max_angle = Math.PI * 23 / 24;
+  this.fire_speed = fire_speed;
+  this.added = null;
+  this.fired = null
+  this.angle = 0;
+
+  this.fire = function(gun)
+  {
+    if (gun.added != null) {
+      gun.added.speedx = Math.cos(gun.angle) * gun.fire_speed;
+      gun.added.speedy = Math.sin(gun.angle) * gun.fire_speed;
+      gun.fired = gun.added;
+      gun.added = null;
+    }
+  }
 
   this.load = function(color)
   {
-
+    this.added = new ball(this.basex, this.basey, color, 0, 0, this.ball_size);
+    add_object(this.added);
   }
 
   this.draw = function(elapsed)
@@ -31,6 +46,7 @@ function shooter(basex, basey, ball_size, arrow_length)
         angle = -this.max_angle;
       }
     }
+    this.angle = angle;
 
     lenx = Math.cos(angle) * this.arrow_length;
     leny = Math.sin(angle) * this.arrow_length;
@@ -54,5 +70,14 @@ function shooter(basex, basey, ball_size, arrow_length)
     ctx.stroke();
     ctx.closePath();
 
+    //If a ball has been fired and is in motion
+    if(this.fired != null) {
+      hitGrid = game_grid.intersect_grid(this.fired);
+      //If ball has been added to the grid
+      if(hitGrid) {
+        this.fired = null;
+        this.load('blue');
+      }
+    }
   }
 }

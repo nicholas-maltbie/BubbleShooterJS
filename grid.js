@@ -27,7 +27,8 @@ function grid(columns, ball_radius, gap, offx, offy)
     {
         loc = this.get_pos(ball.x, ball.y)
         row = Math.round(loc[0])
-        col = Math.floor(loc[1])
+        col = Math.round(loc[1])
+
         adj = this.get_adjacent(row, col)
         adj.push([row, col])
         for (index = 0; index < adj.length; index++)
@@ -35,13 +36,36 @@ function grid(columns, ball_radius, gap, offx, offy)
             loc = adj[index]
             if (this.in_grid(loc[0], loc[1]) && ball.intersect(this.balls[[loc[0], loc[1]]]))
             {
-                this.thingy = false
-                this.insert_ball(ball, row, col)
-                return true
+                adj.sort(this.make_comp(this, ball));
+                for (index = 0; index < adj.length; index++)
+                {
+                    loc = adj[index]
+                    if (!this.in_grid(loc[0], loc[1]))
+                    {
+                        this.thingy = false
+                        this.insert_ball(ball, loc[0], loc[1])
+                        return true
+                    }
+                }
             }
         }
 
         return false
+    }
+
+    this.make_comp = function(grid, ball) {
+      return function(a, b){
+        pos1 = grid.get_loc(a[0], a[1]);
+        pos2 = grid.get_loc(b[0], b[1]);
+        da = Math.sqrt((ball.x - pos1[0]) * (ball.x - pos1[0]) + (ball.y - pos1[1]) * (ball.y - pos1[1]));
+        db = Math.sqrt((ball.x - pos2[0]) * (ball.x - pos2[0]) + (ball.y - pos2[1]) * (ball.y - pos2[1]));
+        if (da == db)
+          return 0;
+        else if (da < db)
+          return -1;
+        else
+          return 1;
+      }
     }
 
     //Draws the grid on the screen
@@ -113,13 +137,10 @@ function grid(columns, ball_radius, gap, offx, offy)
             col = this.columns - 1;
 
         loc = this.get_loc(row, col);
-        console.log(loc)
         ball.x = loc[0]
         ball.y = loc[1]
         ball.speedx = 0
-        console.log(ball.speedx)
         ball.speedy = 0
-        //console.log(row + " " + col + " " + "; " + x + " " + y + "; " + ball.x + " " + ball.y)
         this.balls[[row, col]] = ball
     }
 

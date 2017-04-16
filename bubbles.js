@@ -3,10 +3,14 @@ var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
 var rectangle = canvas.getBoundingClientRect();
 var mouse = {};
+var game_grid = null;
 mouse.x = 0;
 mouse.y = 0;
+mouse.down = 0;
 //setup mouse listener
 canvas.addEventListener('mousemove', mouse_move, false)
+canvas.addEventListener('mousedown', function(evt) {mouse.down = 1}, false)
+canvas.addEventListener('mouseup', function(evt) {mouse.down = 0}, false)
 
 var delay = 20 //delay between frames, 20 ms
 //Get start time
@@ -78,26 +82,24 @@ function clear()
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-var thing = new ball(150, 150, "red", 500, -27, 10)
-add_object(thing)
 //setup the scene
 function setup()
 {
-    //Get ball for game
-    //Add ball to scene
-
     //add ball shooter
-    var ball_shooter = new shooter(rectangle.width / 2, rectangle.height - 20, 10, 75);
+    var ball_shooter = new shooter(rectangle.width / 2, rectangle.height - 20, 10, 75, 200);
     add_object(ball_shooter)
+    ball_shooter.load("blue");
+    canvas.addEventListener('click', function(event) {ball_shooter.fire(ball_shooter)}, false)
 
     //Create game grid
-    var game_grid = new grid(22, 10, 1, 14, 10);
+    game_grid = new grid(22, 10, 1, 14, 10);
+    //add game grid
     add_object(game_grid)
     //add a ball to the grid
     for(var i = 0; i < 88; i++)
         game_grid.add_ball("blue");
 
-    game_grid.move_down(3, 3);
+    game_grid.move_down(.3, 3);
 }
 
 //set draw to every 20 ms
