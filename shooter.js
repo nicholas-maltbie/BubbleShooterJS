@@ -5,8 +5,8 @@ function shooter(basex, basey, ball_size, arrow_length)
   this.basey = basey;
   this.ball_size = ball_size;
   this.arrow_length = arrow_length;
-  this.min_angle = 0;
-  this.max_angle = Math.PI;
+  this.min_angle = Math.PI / 12;
+  this.max_angle = Math.PI * 11 / 12;
 
   this.load = function(color)
   {
@@ -21,6 +21,17 @@ function shooter(basex, basey, ball_size, arrow_length)
     dy = mouse.y - this.basey
     length = Math.sqrt(dx * dx + dy * dy)
     angle = Math.atan2(dy, dx);
+
+    //Bound angle
+    if (-angle < this.min_angle || -angle > this.max_angle) {
+      if (dx > 0) {
+        angle = -this.min_angle;
+      }
+      else {
+        angle = -this.max_angle;
+      }
+    }
+
     lenx = Math.cos(angle) * this.arrow_length;
     leny = Math.sin(angle) * this.arrow_length;
     //Draw main section of the arrow
