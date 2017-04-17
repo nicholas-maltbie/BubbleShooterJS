@@ -4,7 +4,7 @@ function grid(columns, ball_radius, gap, offx, offy)
     this.columns = columns
     this.offx = offx
     this.offy = offy
-    this.rows = 100
+    this.rows = 0
     this.ball_radius = ball_radius
     this.ball_size = ball_radius * 2
     this.next_col = 0
@@ -75,6 +75,34 @@ function grid(columns, ball_radius, gap, offx, offy)
     this.get_ball = function(row, col) {
       if(this.in_grid(row, col))
         return this.balls[[row, col]];
+    }
+
+    this.flood = function(row, col)
+    {
+      var marked = {}
+      var stack = []
+      var found = []
+      stack.push([row, col])
+
+      while (stack.length > 0)
+      {
+        var loc = stack.pop()
+        if (!(loc in marked))
+        {
+          marked[loc] = 0
+          if (this.in_grid(loc[0], loc[1]))
+          {
+            found.push(loc)
+            adj = this.get_adjacent(loc[0],loc[1])
+            for(var index = 0; index < adj.length; index++)
+            {
+              stack.push(adj[index])
+            }
+          }
+        }
+      }
+
+      return found
     }
 
     this.color_flood = function(row, col, color)
@@ -176,7 +204,6 @@ function grid(columns, ball_radius, gap, offx, offy)
         this.balls[[row, col]] = ball
 
         //Get group of balls that this was added to
-        console.log(ball.color);
         group = this.color_flood(row, col, ball.color);
         //If the group has at least 3 balls in it, remove the balls from the grid
         if (group.length >= 3)
@@ -185,7 +212,68 @@ function grid(columns, ball_radius, gap, offx, offy)
             {
                 this.remove_ball(group[index][0], group[index][1])
             }
+            //verify the grid after removing balls
+            this.verify_grid()
         }
+    }
+
+    //ensure that all balls are connected to the top row, if they aren't
+    // connected to the top row, remove them
+    this.verify_grid = function ()
+    {
+        //get all locations
+        var locs = Object.keys(this.balls)
+        var index = 0
+        //save all the balls we have checked.
+        var marked = {}
+        while (index < locs.length)
+        {
+            //get current index
+            loc = locs[index]
+            loc = [parseInt(loc.slice(0, loc.indexOf(','))),
+                    parseInt(loc.slice(loc.indexOf(',') + 1, loc.length))]
+            //make sure to increment index
+            index++
+            //check to make sure we haven't already verified this location
+            //  and make sure this location is in the grid
+            if (!(loc in marked))
+            {
+                //If this is passed, find this ball's group of balls
+                group = this.flood(loc[0], loc[1])
+                //find the max row out of the group
+                max_row = group[0][0]
+                for(var index2 = 1; index2 < group.length; index2++)
+                {
+                    //if a new max
+                    if(group[index2][0] > max_row)
+                    {
+                        //update the max
+                        max_row = group[index2][0]
+                    }
+                }
+                //with the max row found, check to make sure that the max row
+                //  is the same as the top row
+                if (max_row < this.rows - 1)
+                {
+                    //group is disconnected from top, cleanse the group
+                    for(var index2 = 0; index2 < group.length; index2++)
+                    {
+                        this.remove_ball(group[index2][0], group[index2][1])
+                    }
+                }
+                //add all these locations to marked locations
+                for (var index2 = 0; index2 < group.length; index2++)
+                {
+                    marked[group[index2]] = 0;
+                }
+            }
+        }
+    }
+
+    //Get number of balls in grid
+    this.size = function()
+    {
+        return Object.keys(this.balls).length
     }
 
     //Removes a ball at a given row and column

@@ -107,14 +107,7 @@ function setup()
     for(var i = 0; i < 88; i++)
         game_grid.add_ball(get_color());
 
-    game_grid.move_down(0.1, 103);
-
-    console.log(game_grid.get_ball(100,0).color)
-    flood = game_grid.color_flood(100,0,game_grid.get_ball(100,0).color)
-    flood.sort()
-    for (index = 0; index < flood.length; index++) {
-      console.log(flood[index][0] + ", " + flood[index][1])
-    }
+    game_grid.move_down(0.3, 3);
 }
 
 //set draw to every 20 ms
