@@ -31,11 +31,6 @@ function ball(x_start, y_start, color, speedx, speedy, radius)
             this.speedx = -this.speedx
             dx = -dx
         }
-        if (dy + this.y + this.radius / 2 > canvas.height -this.radius ||
-                dy + this.y - this.radius / 2 < this.radius) {
-            this.speedy = -this.speedy
-            dy = -dy
-        }
 
         //Move object based on dx and dy
         this.x += dx

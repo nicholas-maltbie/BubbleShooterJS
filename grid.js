@@ -38,7 +38,7 @@ function grid(columns, ball_radius, gap, offx, offy)
         for (index = 0; index < adj.length; index++)
         {
             loc = adj[index]
-            if (this.in_grid(loc[0], loc[1]) && ball.intersect(this.balls[[loc[0], loc[1]]]))
+            if (loc[0] == this.rows || (this.in_grid(loc[0], loc[1]) && ball.intersect(this.balls[[loc[0], loc[1]]])))
             {
                 adj.sort(this.make_comp(this, ball));
                 for (index = 0; index < adj.length; index++)
