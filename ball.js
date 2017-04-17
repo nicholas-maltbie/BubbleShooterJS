@@ -26,13 +26,13 @@ function ball(x_start, y_start, color, speedx, speedy, radius)
         var dy = this.speedy * elapsed
 
         //If ball goes off the screen switch direction.
-        if (dx + this.x + this.radius / 2 > canvas.width ||
-                dx + this.x - this.radius / 2 < 0) {
+        if (dx + this.x + this.radius / 2 > canvas.width - this.radius ||
+                dx + this.x - this.radius / 2 < this.radius) {
             this.speedx = -this.speedx
             dx = -dx
         }
-        if (dy + this.y + this.radius / 2 > canvas.height ||
-                dy + this.y - this.radius / 2 < 0) {
+        if (dy + this.y + this.radius / 2 > canvas.height -this.radius ||
+                dy + this.y - this.radius / 2 < this.radius) {
             this.speedy = -this.speedy
             dy = -dy
         }

@@ -4,7 +4,7 @@ function grid(columns, ball_radius, gap, offx, offy)
     this.columns = columns
     this.offx = offx
     this.offy = offy
-    this.rows = 0
+    this.rows = 100
     this.ball_radius = ball_radius
     this.ball_size = ball_radius * 2
     this.next_col = 0
@@ -72,21 +72,37 @@ function grid(columns, ball_radius, gap, offx, offy)
       }
     }
 
-    this.color_flood = function(row, col, color, group={}) {
-      if(this.in_grid(row, col) && this.balls[[row, col]].color == color) {
-        locs = [[row, col]];
-        group[[row, col]] = 0
-        adj = this.get_adjacent(row, col)
-        for(var index = 0; index < adj.length; index++) {
-          if(!([adj[index][0], adj[index][1]] in group)) {
-            locs = locs.concat(this.color_flood(adj[index][0], adj[index][1], color, group))
+    this.get_ball = function(row, col) {
+      if(this.in_grid(row, col))
+        return this.balls[[row, col]];
+    }
+
+    this.color_flood = function(row, col, color)
+    {
+      var marked = {}
+      var stack = []
+      var found = []
+      stack.push([row, col])
+
+      while (stack.length > 0)
+      {
+        var loc = stack.pop()
+        if (!(loc in marked))
+        {
+          marked[loc] = 0
+          if (this.in_grid(loc[0], loc[1]) && this.get_ball(loc[0], loc[1]).color == color)
+          {
+            found.push(loc)
+            adj = this.get_adjacent(loc[0],loc[1])
+            for(var index = 0; index < adj.length; index++)
+            {
+              stack.push(adj[index])
+            }
           }
         }
-        return locs;
       }
-      else {
-        return []
-      }
+
+      return found
     }
 
     //Draws the grid on the screen
@@ -160,6 +176,7 @@ function grid(columns, ball_radius, gap, offx, offy)
         this.balls[[row, col]] = ball
 
         //Get group of balls that this was added to
+        console.log(ball.color);
         group = this.color_flood(row, col, ball.color);
         //If the group has at least 3 balls in it, remove the balls from the grid
         if (group.length >= 3)
@@ -192,10 +209,6 @@ function grid(columns, ball_radius, gap, offx, offy)
     //Gets the adjacent locations to a spot on the grid as a list (with a hex layout)
     this.get_adjacent = function (row, col)
     {
-        //(0,0) (0,1) (0,2)
-        //  (1,0) (1,1) (1,2)
-        //(2,0) (2,1) (2,2)
-        //  (3,0) (3,1) (3,2)
         if (Math.abs(row) % 2 == 1)
         {
             return [[row - 1, col],
@@ -208,11 +221,11 @@ function grid(columns, ball_radius, gap, offx, offy)
         else
         {
             return [[row - 1, col - 1],
-                    [row - 1,col],
+                    [row - 1, col],
                     [row, col + 1],
                     [row, col - 1],
-                    [row + 1, col],
-                    [row + 1, col - 1]]
+                    [row + 1, col - 1],
+                    [row + 1, col]]
         }
     }
 

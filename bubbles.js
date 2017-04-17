@@ -5,7 +5,7 @@ var rectangle = canvas.getBoundingClientRect();
 var mouse = {};
 var game_grid = null;
 
-var game_colors = ['red', 'green', 'blue', 'orange', 'magenta'];
+var game_colors = ['red', 'blue', 'green', 'orange', 'magenta'];
 
 mouse.x = 0;
 mouse.y = 0;
@@ -37,8 +37,8 @@ function get_color()
 //function to track mouse movement
 function mouse_move(e)
 {
-    var x = event.clientX - rectangle.left;
-    var y = event.clientY - rectangle.top;
+    var x = e.clientX - rectangle.left;
+    var y = e.clientY - rectangle.top;
     mouse.x = x;
     mouse.y = y;
 }
@@ -107,7 +107,14 @@ function setup()
     for(var i = 0; i < 88; i++)
         game_grid.add_ball(get_color());
 
-    game_grid.move_down(.3, 3);
+    game_grid.move_down(0.1, 103);
+
+    console.log(game_grid.get_ball(100,0).color)
+    flood = game_grid.color_flood(100,0,game_grid.get_ball(100,0).color)
+    flood.sort()
+    for (index = 0; index < flood.length; index++) {
+      console.log(flood[index][0] + ", " + flood[index][1])
+    }
 }
 
 //set draw to every 20 ms
