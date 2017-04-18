@@ -69,15 +69,5 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed)
         , this.basey + leny - Math.sin(angle - Math.PI / 6) * arrow_length / 4)
     ctx.stroke();
     ctx.closePath();
-
-    //If a ball has been fired and is in motion
-    if(this.fired != null) {
-      hitGrid = game_grid.intersect_grid(this.fired);
-      //If ball has been added to the grid
-      if(hitGrid) {
-        this.fired = null;
-        this.load(get_color());
-      }
-    }
   }
 }

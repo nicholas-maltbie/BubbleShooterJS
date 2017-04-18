@@ -100,14 +100,15 @@ function setup()
     canvas.addEventListener('click', function(event) {ball_shooter.fire(ball_shooter)}, false)
 
     //Create game grid
-    game_grid = new grid(22, 10, 1, 14, 10);
+    var game_grid = new grid(22, 10, 1, 14, 10);
     //add game grid
     add_object(game_grid)
     //add a ball to the grid
-    for(var i = 0; i < 88; i++)
-        game_grid.add_ball(get_color());
+    for(var i = 0; i < 4; i++)
+        game_grid.add_row(get_color);
 
-    game_grid.move_down(0.3, 3);
+    var game_manager = new manager(ball_shooter, game_grid)
+    add_object(game_manager)
 }
 
 //set draw to every 20 ms

@@ -4,7 +4,7 @@ function grid(columns, ball_radius, gap, offx, offy)
     this.columns = columns
     this.offx = offx
     this.offy = offy
-    this.rows = 0
+    this.rows = 1
     this.ball_radius = ball_radius
     this.ball_size = ball_radius * 2
     this.next_col = 0
@@ -16,6 +16,7 @@ function grid(columns, ball_radius, gap, offx, offy)
                             //there are now at least 3 balls in the group, the
                             //gropu is removed from the grid.
     //values to save state of moving down
+    this.moving = 0
     this.target = 0         //how far should the balls move
     this.time = 0           //how long do the balls have to move there
     this.taken = 0          //how much time has elapsed since the balls started moving
@@ -23,8 +24,9 @@ function grid(columns, ball_radius, gap, offx, offy)
 
     this.move_down = function (time, rows=1)
     {
-        this.target = (this.ball_size + this.gap) * rows;
-        this.time = time
+        this.moving = 1
+        this.target += (this.ball_size + this.gap) * rows;
+        this.time += time
     }
 
     this.intersect_grid = function (ball)
@@ -136,7 +138,7 @@ function grid(columns, ball_radius, gap, offx, offy)
     //Draws the grid on the screen
     this.draw = function (elapsed)
     {
-        if(this.time != 0)
+        if(this.moving == 1)
         {
             dy = this.target / this.time * elapsed;
             if(this.taken + elapsed >= this.time)
@@ -146,6 +148,7 @@ function grid(columns, ball_radius, gap, offx, offy)
                 this.time = 0;
                 this.taken = 0
                 this.current_move = 0
+                this.moving = 0
             }
             else
             {
@@ -175,6 +178,16 @@ function grid(columns, ball_radius, gap, offx, offy)
         if (Math.abs(row) % 2 == 0)
             col = (x - this.gap - this.offy - this.ball_size / 2) / (this.gap + this.ball_size)
         return [row, col]
+    }
+
+    //adds a row of balls
+    this.add_row = function (color_fn)
+    {
+      for(var count = 0; count < this.columns; count++)
+      {
+        this.add_ball(color_fn())
+      }
+      this.move_down(0.1, 1)
     }
 
     //Adds a single ball to the grid
