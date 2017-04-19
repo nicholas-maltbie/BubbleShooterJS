@@ -29,6 +29,19 @@ function grid(columns, ball_radius, gap, offx, offy)
         this.time += time
     }
 
+    this.get_all_colors = function()
+    {
+      var colors = {}
+      var keys = Object.keys(this.balls)
+      for(var index = 0; index < keys.length; index++) {
+        var c = this.balls[keys[index]].color;
+        if (!(c in colors)) {
+          colors[c] = 0;
+        }
+      }
+      return Object.keys(colors)
+    }
+
     this.height = function()
     {
       //get all locations

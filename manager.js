@@ -26,7 +26,7 @@ function manager(ball_shooter, game_grid)
       {
         if(this.shots % this.expand == 0)
         {
-          this.game_grid.add_row(get_color)
+          //this.game_grid.add_row(get_color)
         }
       }
       this.wait += elapsed;
@@ -34,7 +34,7 @@ function manager(ball_shooter, game_grid)
       {
         this.ball_shooter.load(get_color());
         this.wait = 0
-        console.log(this.game_grid.height())
+        console.log(this.game_grid.get_all_colors())
       }
     }
   }
