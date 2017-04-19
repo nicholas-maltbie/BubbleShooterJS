@@ -42,7 +42,7 @@ function manager(ball_shooter, game_grid)
         this.wait = 0
         if (game_grid.height() >= this.lose_height) {
           this.lose = true;
-          this.ball_shooter.can_fire = false;
+          this.ball_shooter.lost = true;
         }
       }
     }

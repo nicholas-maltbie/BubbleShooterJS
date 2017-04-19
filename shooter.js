@@ -16,17 +16,21 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed, color_fn)
   this.queue = []
   this.queue_length = 4
   this.loading = false
+  this.load_vel = 100
+  this.lost = false
 
   while(this.queue.length < this.queue_length)
   {
     var loaded = new ball(this.basex, this.basey, color_fn(), 0, 0, this.ball_size);
     this.queue.push(loaded);
+    loaded.x = this.basex - (this.ball_size * 2 + this.gap) * (this.queue.length + 1)
+    loaded.y = this.basey
     add_object(loaded);
   }
 
   this.fire = function(gun)
   {
-    if (this.can_fire && gun.added != null) {
+    if (!this.lost && this.can_fire && gun.added != null) {
       gun.added.speedx = Math.cos(gun.angle) * gun.fire_speed;
       gun.added.speedy = Math.sin(gun.angle) * gun.fire_speed;
       gun.fired = gun.added;
@@ -40,14 +44,18 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed, color_fn)
 
     while(this.queue.length < this.queue_length)
     {
+      this.loading = true
       var loaded = new ball(this.basex, this.basey, color_fn(), 0, 0, this.ball_size);
       this.queue.push(loaded);
+      loaded.x = this.basex - (this.ball_size * 2 + this.gap) * (this.queue.length + 1)
+      loaded.y = this.basey
       add_object(loaded);
     }
   }
 
   this.draw = function(elapsed)
   {
+    this.can_fire = true;
     if(this.loading == false) {
       if(this.added != null) {
         this.added.x = this.basex;
@@ -56,6 +64,15 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed, color_fn)
       for(var index = 0; index < this.queue.length; index++) {
         this.queue[index].x = this.basex - (this.ball_size * 2 + this.gap) * (index + 1)
         this.queue[index].y = this.basey
+      }
+    }
+    else  {
+      this.can_fire = false;
+      this.added.speedx = this.load_vel;
+      var vel = this.load_vel
+      this.queue.forEach( function(b) {b.speedx = vel})
+      if (this.added.x >= this.basex) {
+        this.loading = false
       }
     }
 
