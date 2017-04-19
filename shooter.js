@@ -1,9 +1,10 @@
 //Define a shooter
-function shooter(basex, basey, ball_size, arrow_length, fire_speed)
+function shooter(basex, basey, ball_size, arrow_length, fire_speed, color_fn)
 {
   this.basex = basex;
   this.basey = basey;
   this.ball_size = ball_size;
+  this.gap = 10;
   this.arrow_length = arrow_length;
   this.min_angle = Math.PI / 24;
   this.max_angle = Math.PI * 23 / 24;
@@ -12,6 +13,16 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed)
   this.fired = null
   this.angle = 0;
   this.can_fire = true
+  this.queue = []
+  this.queue_length = 4
+  this.loading = false
+
+  while(this.queue.length < this.queue_length)
+  {
+    var loaded = new ball(this.basex, this.basey, color_fn(), 0, 0, this.ball_size);
+    this.queue.push(loaded);
+    add_object(loaded);
+  }
 
   this.fire = function(gun)
   {
@@ -25,12 +36,28 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed)
 
   this.load = function(color_fn)
   {
-    this.added = new ball(this.basex, this.basey, color_fn(), 0, 0, this.ball_size);
-    add_object(this.added);
+    this.added = this.queue.shift()
+
+    while(this.queue.length < this.queue_length)
+    {
+      var loaded = new ball(this.basex, this.basey, color_fn(), 0, 0, this.ball_size);
+      this.queue.push(loaded);
+      add_object(loaded);
+    }
   }
 
   this.draw = function(elapsed)
   {
+    if(this.loading == false) {
+      if(this.added != null) {
+        this.added.x = this.basex;
+        this.added.y = this.basey;
+      }
+      for(var index = 0; index < this.queue.length; index++) {
+        this.queue[index].x = this.basex - (this.ball_size * 2 + this.gap) * (index + 1)
+        this.queue[index].y = this.basey
+      }
+    }
 
     //draw an arrow for aiming
     dx = mouse.x - this.basex
