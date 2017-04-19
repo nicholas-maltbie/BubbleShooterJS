@@ -47,7 +47,8 @@ function manager(ball_shooter, game_grid)
       }
     }
     if(this.lose) {
-      ctx.font = "45px Comic Sans MS";
+      ctx.lineWidth = 3
+      ctx.font = "65px Comic Sans MS";
       ctx.fillStyle = "white";
       ctx.textAlign = "center";
       ctx.fillText("You Lose", canvas.width/2, canvas.height/2);

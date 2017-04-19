@@ -68,10 +68,11 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed, color_fn)
     }
     else  {
       this.can_fire = false;
-      this.added.speedx = this.load_vel;
+      if(this.added != null)
+        this.added.speedx = this.load_vel;
       var vel = this.load_vel
       this.queue.forEach( function(b) {b.speedx = vel})
-      if (this.added.x >= this.basex) {
+      if (this.added != null && this.added.x >= this.basex) {
         this.loading = false
       }
     }
@@ -95,22 +96,23 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed, color_fn)
 
     lenx = Math.cos(angle) * this.arrow_length;
     leny = Math.sin(angle) * this.arrow_length;
+    ctx.lineWidth = 3;
     //Draw main section of the arrow
     ctx.beginPath();
-    ctx.moveTo(this.basex, this.basey)
-    ctx.lineTo(this.basex + lenx, this.basey + leny)
+    ctx.moveTo(this.basex + 2, this.basey)
+    ctx.lineTo(this.basex + 2 + lenx, this.basey + leny)
     ctx.stroke();
     ctx.closePath();
     //Draw two edge lines of the arrow
     ctx.beginPath();
-    ctx.moveTo(this.basex + lenx, this.basey + leny)
-    ctx.lineTo(this.basex + lenx - Math.cos(angle + Math.PI / 6) * arrow_length / 4
+    ctx.moveTo(this.basex + 2 + lenx, this.basey + leny)
+    ctx.lineTo(this.basex + 2 + lenx - Math.cos(angle + Math.PI / 6) * arrow_length / 4
         , this.basey + leny - Math.sin(angle + Math.PI / 6) * arrow_length / 4)
     ctx.stroke();
     ctx.closePath();
     ctx.beginPath();
-    ctx.moveTo(this.basex + lenx, this.basey + leny)
-    ctx.lineTo(this.basex + lenx - Math.cos(angle - Math.PI / 6) * arrow_length / 4
+    ctx.moveTo(this.basex + 2 + lenx, this.basey + leny)
+    ctx.lineTo(this.basex + 2 + lenx - Math.cos(angle - Math.PI / 6) * arrow_length / 4
         , this.basey + leny - Math.sin(angle - Math.PI / 6) * arrow_length / 4)
     ctx.stroke();
     ctx.closePath();
