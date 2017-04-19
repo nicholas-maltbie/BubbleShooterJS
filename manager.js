@@ -4,7 +4,7 @@ function manager(ball_shooter, game_grid)
   this.ball_shooter = ball_shooter
   this.game_grid = game_grid
   this.reload = 0.5
-  this.expand = 5
+  this.expand = 10
   this.wait = 0
   this.shots = 0
 
@@ -22,15 +22,19 @@ function manager(ball_shooter, game_grid)
     //reload the ball shooter if elapsed time
     if (this.ball_shooter.added == null && this.ball_shooter.fired == null)
     {
+      if (this.wait == 0)
+      {
+        if(this.shots % this.expand == 0)
+        {
+          this.game_grid.add_row(get_color)
+        }
+      }
       this.wait += elapsed;
       if (this.wait >= this.reload)
       {
         this.ball_shooter.load(get_color());
         this.wait = 0
-        if(this.shots % this.expand == 0)
-        {
-          this.game_grid.add_row(get_color)
-        }
+        console.log(this.game_grid.height())
       }
     }
   }

@@ -29,6 +29,26 @@ function grid(columns, ball_radius, gap, offx, offy)
         this.time += time
     }
 
+    this.height = function()
+    {
+      //get all locations
+      var locs = Object.keys(this.balls)
+      var min = Infinity, max = -Infinity;
+
+      for (var index = 0; index < locs.length; index++)
+      {
+          //get current location
+          loc = locs[index]
+          loc = [parseInt(loc.slice(0, loc.indexOf(','))),
+                  parseInt(loc.slice(loc.indexOf(',') + 1, loc.length))]
+          if(loc[0] < min)
+            min = loc[0]
+          if(loc[0] > max)
+            max = loc[0]
+      }
+      return max - min + 1;
+    }
+
     this.intersect_grid = function (ball)
     {
         loc = this.get_pos(ball.x, ball.y)
