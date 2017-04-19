@@ -11,10 +11,11 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed)
   this.added = null;
   this.fired = null
   this.angle = 0;
+  this.can_fire = true
 
   this.fire = function(gun)
   {
-    if (gun.added != null) {
+    if (this.can_fire && gun.added != null) {
       gun.added.speedx = Math.cos(gun.angle) * gun.fire_speed;
       gun.added.speedy = Math.sin(gun.angle) * gun.fire_speed;
       gun.fired = gun.added;
@@ -22,9 +23,9 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed)
     }
   }
 
-  this.load = function(color)
+  this.load = function(color_fn)
   {
-    this.added = new ball(this.basex, this.basey, color, 0, 0, this.ball_size);
+    this.added = new ball(this.basex, this.basey, color_fn(), 0, 0, this.ball_size);
     add_object(this.added);
   }
 

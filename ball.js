@@ -9,6 +9,10 @@ function ball(x_start, y_start, color, speedx, speedy, radius)
     this.speedy = speedy
     this.color = color
     this.radius = radius
+    this.dying = false;
+    this.time = 0;
+    this.death_timer = 0;
+    this.arc = Math.PI * 2;
 
     //Check if two circles intersect
     this.intersect = function (circle)
@@ -19,8 +23,30 @@ function ball(x_start, y_start, color, speedx, speedy, radius)
         return dx * dx + dy * dy <= rsum * rsum
     }
 
+    this.die = function(time)
+    {
+        this.dying = true;
+        this.death_timer = time;
+        this.time = time;
+    }
+
+    this.is_dead = function ()
+    {
+      return this.dying && this.time <= 0
+    }
+
     this.draw = function (elapsed)
     {
+        if (this.dying) {
+            this.time -= elapsed;
+            this.arc = Math.PI * 2 * this.time / this.death_timer;
+
+            if(this.time <= 0) {
+                remove_object(this.id)
+                return
+            }
+        }
+
         //Calculate movement across the x and y axis
         var dx = this.speedx * elapsed
         var dy = this.speedy * elapsed
@@ -38,7 +64,7 @@ function ball(x_start, y_start, color, speedx, speedy, radius)
 
         //Draw ball at its current location
         ctx.beginPath()
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2)
+        ctx.arc(this.x, this.y, this.radius, 0, this.arc)
         ctx.fillStyle = this.color
         ctx.fill()
         ctx.closePath()

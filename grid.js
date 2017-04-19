@@ -327,7 +327,7 @@ function grid(columns, ball_radius, gap, offx, offy)
     {
         if(this.in_grid(row, col))
         {
-            remove_object(this.balls[[row,col]].id)
+            this.balls[[row,col]].die(.2)
             delete this.balls[[row, col]]
             return true
         }
