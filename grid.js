@@ -213,6 +213,14 @@ function grid(columns, ball_radius, gap, offx, offy)
         return [row, col]
     }
 
+    this.add_rows = function (color_fn, rows)
+    {
+      for(var index = 0; index < rows; index++)
+      {
+        this.add_row(color_fn)
+      }
+    }
+
     //adds a row of balls
     this.add_row = function (color_fn)
     {

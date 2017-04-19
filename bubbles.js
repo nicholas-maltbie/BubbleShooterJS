@@ -126,8 +126,7 @@ function setup()
     //add game grid
     add_object(game_grid)
     //add a ball to the grid
-    for(var i = 0; i < 4; i++)
-        game_grid.add_row(get_color);
+    game_grid.add_rows(get_color, 5)
 
     var game_manager = new manager(ball_shooter, game_grid)
     add_object(game_manager, 10)
