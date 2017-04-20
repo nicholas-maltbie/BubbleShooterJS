@@ -7,15 +7,36 @@
 <head>
     <title>Bubble Shooter js</title>
     <style>
-    	* { padding: 0; margin: 0; }
-    	canvas { background: #eee; display: block; margin: 0 auto; }
+      .container
+      {
+        display: block;
+        margin: 0 auto;
+        width: 480px;
+        align-items: center;
+      }
+    	#game
+      {
+        background: #eee;
+        display: block;
+      }
+      #reset
+      {
+        margin-top: 10px;
+        vertical-align: super;
+        display: block;
+      }
     </style>
 </head>
 <body>
-    <canvas id="myCanvas" width="480" height="320"></canvas>
-    <script src='grid.js'></script>
-    <script src='ball.js'></script>
-    <script src='shooter.js'></script>
-    <script src='manager.js'></script>
-    <script src='bubbles.js'></script>
+  <div class='container'>
+    <div id="game">
+      <canvas id="myCanvas" width="480" height="320"></canvas>
+      <script src='grid.js'></script>
+      <script src='ball.js'></script>
+      <script src='shooter.js'></script>
+      <script src='manager.js'></script>
+      <script src='bubbles.js'></script>
+    </div>
+    <button id="reset" type="button" onclick="reset()">Restart</button>
+  </div>
 </body>

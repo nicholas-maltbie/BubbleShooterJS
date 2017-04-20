@@ -25,6 +25,21 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed, color_fn)
   this.load_vel = 100
   this.lost = false
 
+  this.remove_self = function()
+  {
+    if(this.added != null)
+    {
+      remove_object(this.added.id)
+    }
+    if(this.fired != null)
+    {
+      remove_object(this.fired.id)
+    }
+    this.queue.forEach(function(e) {remove_object(e.id)})
+
+    remove_object(this.id)
+  }
+
   while(this.queue.length < this.queue_length)
   {
     var loaded = new ball(this.basex, this.basey, color_fn(), 0, 0, this.ball_size);

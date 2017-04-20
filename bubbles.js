@@ -12,7 +12,7 @@ var mouse = {};
 var game_grid = null;
 
 var initial_colors = ['red', 'blue', '#eddd2d', '#54e202']
-var add_colors = ['#0ad89a', 'magenta', '#d64300']
+var add_colors = ['#0ad89a', 'magenta', '#f4bf42']
 var game_colors = initial_colors
 
 mouse.x = 0;
@@ -85,6 +85,30 @@ function remove_object(id)
     return delete game_objects[id]
 }
 
+//resets the game
+function reset()
+{
+  this.game_colors = initial_colors;
+  game_manager.remove_self()
+  ball_shooter.remove_self()
+  game_grid.remove_self()
+
+  ball_shooter = new shooter(rectangle.width / 2, rectangle.height - 20, 10, 75, 400, get_color);
+  add_object(ball_shooter, -1)
+  ball_shooter.load(get_color);
+  canvas.addEventListener('click', function(event) {ball_shooter.fire(ball_shooter)}, false)
+
+  //Create game grid
+  game_grid = new grid(22, 10, 1, 14, 10);
+  //add game grid
+  add_object(game_grid)
+  //add a ball to the grid
+  game_grid.add_rows(get_color, 5)
+
+  game_manager = new manager(ball_shooter, game_grid)
+  add_object(game_manager, 10)
+}
+
 //draw function
 function draw()
 {
@@ -120,23 +144,27 @@ function clear()
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
+var ball_shooter
+var game_grid
+var game_manager
+
 //setup the scene
 function setup()
 {
     //add ball shooter
-    var ball_shooter = new shooter(rectangle.width / 2, rectangle.height - 20, 10, 75, 400, get_color);
+    ball_shooter = new shooter(rectangle.width / 2, rectangle.height - 20, 10, 75, 400, get_color);
     add_object(ball_shooter, -1)
     ball_shooter.load(get_color);
     canvas.addEventListener('click', function(event) {ball_shooter.fire(ball_shooter)}, false)
 
     //Create game grid
-    var game_grid = new grid(22, 10, 1, 14, 10);
+    game_grid = new grid(22, 10, 1, 14, 10);
     //add game grid
     add_object(game_grid)
     //add a ball to the grid
     game_grid.add_rows(get_color, 5)
 
-    var game_manager = new manager(ball_shooter, game_grid)
+    game_manager = new manager(ball_shooter, game_grid)
     add_object(game_manager, 10)
 }
 

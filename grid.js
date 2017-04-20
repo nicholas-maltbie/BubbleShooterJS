@@ -28,6 +28,17 @@ function grid(columns, ball_radius, gap, offx, offy)
     this.taken = 0          //how much time has elapsed since the balls started moving
     this.current_move = 0   //how far have the balls moved so far
 
+    this.remove_self = function()
+    {
+      var keys = Object.keys(this.balls)
+      for(var index = 0; index < keys.length; index++)
+      {
+        var c = this.balls[keys[index]];
+        remove_object(c.id);
+      }
+      remove_object(this.id)
+    }
+
     this.move_down = function (time, rows=1)
     {
         this.moving = 1

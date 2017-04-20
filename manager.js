@@ -41,6 +41,11 @@ function manager(ball_shooter, game_grid)
   death_line = new line(0, death_height, canvas.width, death_height, 1, 'red')
   add_object(death_line, -1)
 
+  this.remove_self = function() {
+    remove_object(death_line.id)
+    remove_object(this.id)
+  }
+
   this.draw = function(elapsed) {
     //If a ball has been fired and is in motion
     if(this.ball_shooter.fired != null)
