@@ -116,7 +116,7 @@ function clear()
 function setup()
 {
     //add ball shooter
-    var ball_shooter = new shooter(rectangle.width / 2, rectangle.height - 20, 10, 75, 200, get_color);
+    var ball_shooter = new shooter(rectangle.width / 2, rectangle.height - 20, 10, 75, 400, get_color);
     add_object(ball_shooter, -1)
     ball_shooter.load(get_color);
     canvas.addEventListener('click', function(event) {ball_shooter.fire(ball_shooter)}, false)
