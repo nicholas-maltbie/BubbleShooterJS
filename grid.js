@@ -1,3 +1,9 @@
+/* Copyright (c) 2016 Nicholas Maltbie
+ * MIT License
+ *
+ * grid.js - grid storage and physics file
+ */
+
 //function to make a grid
 function grid(columns, ball_radius, gap, offx, offy)
 {

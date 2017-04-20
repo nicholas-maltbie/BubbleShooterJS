@@ -1,3 +1,9 @@
+/* Copyright (c) 2016 Nicholas Maltbie
+ * MIT License
+ *
+ * Bubble.js - main file
+ */
+
 //Game canvas and context
 var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
@@ -5,7 +11,7 @@ var rectangle = canvas.getBoundingClientRect();
 var mouse = {};
 var game_grid = null;
 
-var game_colors = ['red', 'blue', 'green', 'orange', 'magenta'];
+var game_colors = ['red', 'blue', 'green', '#0ad89a', 'magenta'];
 
 mouse.x = 0;
 mouse.y = 0;

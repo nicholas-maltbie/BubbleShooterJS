@@ -1,3 +1,9 @@
+/* Copyright (c) 2016 Nicholas Maltbie
+ * MIT License
+ *
+ * manager.js - game moderator file
+ */
+
 //define a game manager
 function manager(ball_shooter, game_grid)
 {

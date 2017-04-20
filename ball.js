@@ -1,3 +1,8 @@
+/* Copyright (c) 2016 Nicholas Maltbie
+ * MIT License
+ *
+ * Ball.js - graphcial and physics ball file
+ */
 
 //function to make a ball
 function ball(x_start, y_start, color, speedx, speedy, radius)

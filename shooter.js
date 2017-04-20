@@ -1,3 +1,9 @@
+/* Copyright (c) 2016 Nicholas Maltbie
+ * MIT License
+ *
+ * shooter.js - bubble shooter / player control file
+ */
+
 //Define a shooter
 function shooter(basex, basey, ball_size, arrow_length, fire_speed, color_fn)
 {
