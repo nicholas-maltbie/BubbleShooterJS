@@ -11,7 +11,9 @@ var rectangle = canvas.getBoundingClientRect();
 var mouse = {};
 var game_grid = null;
 
-var game_colors = ['red', 'blue', 'green', '#0ad89a', 'magenta'];
+var initial_colors = ['red', 'blue', '#1fed04', '#e4f400']
+var add_colors = ['#0ad89a', 'magenta', '#ff9400']
+var game_colors = initial_colors
 
 mouse.x = 0;
 mouse.y = 0;

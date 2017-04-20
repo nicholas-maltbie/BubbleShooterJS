@@ -22,10 +22,12 @@ function manager(ball_shooter, game_grid)
 {
   this.ball_shooter = ball_shooter
   this.game_grid = game_grid
+  this.rows_added = 0
+  this.color_marks = [3, 7, 12]
   this.reload = 0.5
   this.expand = 10
-  this.min_expand = 5
-  this.acceleration = 1
+  this.min_expand = 7
+  this.acceleration = 0.5
   this.wait = 0
   this.shots = 0
   this.lose = false
@@ -70,14 +72,23 @@ function manager(ball_shooter, game_grid)
       if (this.wait >= this.reload)
       {
         this.cycle = false;
-        if(this.shots % this.expand == 0)
+        if(this.shots >= this.expand)
         {
-          this.game_grid.add_row(get_color)
+          this.rows_added++
           this.shots = 0;
           this.expand -= this.acceleration;
           if (this.expand < this.min_expand) {
             this.expand = this.min_expand;
           }
+
+          for(var index = 0;index < this.color_marks.length; index++)
+          {
+            if(this.rows_added == this.color_marks[index])
+            {
+              game_colors.push(add_colors[index])
+            }
+          }
+          this.game_grid.add_row(get_color)
         }
         this.wait = 0
         if (game_grid.height() >= this.lose_height) {
@@ -117,7 +128,7 @@ function manager(ball_shooter, game_grid)
       ctx.fillStyle = "white";
       ctx.textAlign = "left"
       var scoreText = "Score: " + this.score
-      var nextRow = "Next: " + (this.expand - this.shots)
+      var nextRow = "Next: " + Math.ceil(this.expand - this.shots)
       ctx.fillText(scoreText, canvas.width - ctx.measureText(scoreText).width - 10, canvas.height - 10)
       ctx.strokeText(scoreText, canvas.width - ctx.measureText(scoreText).width - 10, canvas.height - 10)
       ctx.fillText(nextRow, 10, canvas.height - 10)
