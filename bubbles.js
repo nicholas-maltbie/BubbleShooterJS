@@ -132,6 +132,41 @@ function setup()
     add_object(game_manager, 10)
 }
 
+function fillRoundRect(x, y, w, h, radius)
+{
+    var r = x + w;
+    var b = y + h;
+    ctx.beginPath();
+    ctx.lineWidth="4";
+    ctx.moveTo(x+radius, y);
+    ctx.lineTo(r-radius, y);
+    ctx.quadraticCurveTo(r, y, r, y+radius);
+    ctx.lineTo(r, y+h-radius);
+    ctx.quadraticCurveTo(r, b, r-radius, b);
+    ctx.lineTo(x+radius, b);
+    ctx.quadraticCurveTo(x, b, x, b-radius);
+    ctx.lineTo(x, y+radius);
+    ctx.quadraticCurveTo(x, y, x+radius, y);
+    ctx.fill();
+}
+
+function roundRect(x, y, w, h, radius)
+{
+    var r = x + w;
+    var b = y + h;
+    ctx.beginPath();
+    ctx.lineWidth="4";
+    ctx.moveTo(x+radius, y);
+    ctx.lineTo(r-radius, y);
+    ctx.quadraticCurveTo(r, y, r, y+radius);
+    ctx.lineTo(r, y+h-radius);
+    ctx.quadraticCurveTo(r, b, r-radius, b);
+    ctx.lineTo(x+radius, b);
+    ctx.quadraticCurveTo(x, b, x, b-radius);
+    ctx.lineTo(x, y+radius);
+    ctx.quadraticCurveTo(x, y, x+radius, y);
+    ctx.stroke();
+}
+
 //set draw to every 20 ms
 setInterval(draw, delay)
-//draw()

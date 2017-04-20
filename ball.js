@@ -12,6 +12,7 @@ function ball(x_start, y_start, color, speedx, speedy, radius)
     this.dying = false;
     this.time = 0;
     this.death_timer = 0;
+    this.full = this.radius;
     this.arc = Math.PI * 2;
 
     //Check if two circles intersect
@@ -23,11 +24,12 @@ function ball(x_start, y_start, color, speedx, speedy, radius)
         return dx * dx + dy * dy <= rsum * rsum
     }
 
-    this.die = function(time)
+    this.die = function(time, fall_speed = 0)
     {
         this.dying = true;
         this.death_timer = time;
         this.time = time;
+        this.speedy = fall_speed;
     }
 
     this.is_dead = function ()
@@ -39,7 +41,7 @@ function ball(x_start, y_start, color, speedx, speedy, radius)
     {
         if (this.dying) {
             this.time -= elapsed;
-            this.arc = Math.PI * 2 * this.time / this.death_timer;
+            this.radius = Math.max(0, this.full * this.time / this.death_timer);
 
             if(this.time <= 0) {
                 remove_object(this.id)

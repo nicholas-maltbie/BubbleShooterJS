@@ -82,14 +82,13 @@ function grid(columns, ball_radius, gap, offx, offy)
                     if (!this.in_grid(loc[0], loc[1]))
                     {
                         this.thingy = false
-                        this.insert_ball(ball, loc[0], loc[1])
-                        return true
+                        return [true, loc]
                     }
                 }
             }
         }
 
-        return false
+        return [false, null]
     }
 
     this.make_comp = function(grid, ball) {
@@ -266,9 +265,9 @@ function grid(columns, ball_radius, gap, offx, offy)
             {
                 this.remove_ball(group[index][0], group[index][1])
             }
-            //verify the grid after removing balls
-            this.verify_grid()
+            return group.length
         }
+        return 0
     }
 
     //ensure that all balls are connected to the top row, if they aren't
@@ -278,6 +277,7 @@ function grid(columns, ball_radius, gap, offx, offy)
         //get all locations
         var locs = Object.keys(this.balls)
         var index = 0
+        var removed = 0
         //save all the balls we have checked.
         var marked = {}
         while (index < locs.length)
@@ -313,6 +313,7 @@ function grid(columns, ball_radius, gap, offx, offy)
                     for(var index2 = 0; index2 < group.length; index2++)
                     {
                         this.remove_ball(group[index2][0], group[index2][1])
+                        removed++
                     }
                 }
                 //add all these locations to marked locations
@@ -322,6 +323,9 @@ function grid(columns, ball_radius, gap, offx, offy)
                 }
             }
         }
+
+        //return number of removed balls
+        return removed
     }
 
     //Get number of balls in grid

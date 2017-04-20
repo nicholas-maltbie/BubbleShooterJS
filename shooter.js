@@ -30,7 +30,7 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed, color_fn)
 
   this.fire = function(gun)
   {
-    if (!this.lost && this.can_fire && gun.added != null) {
+    if (!this.loading && !this.lost && this.can_fire && gun.added != null) {
       gun.added.speedx = Math.cos(gun.angle) * gun.fire_speed;
       gun.added.speedy = Math.sin(gun.angle) * gun.fire_speed;
       gun.fired = gun.added;
