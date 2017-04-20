@@ -1,10 +1,16 @@
+/* Copyright (c) 2016 Nicholas Maltbie
+ * MIT License
+ *
+ * grid.js - grid storage and physics file
+ */
+
 //function to make a grid
 function grid(columns, ball_radius, gap, offx, offy)
 {
     this.columns = columns
     this.offx = offx
     this.offy = offy
-    this.rows = 0
+    this.rows = 1
     this.ball_radius = ball_radius
     this.ball_size = ball_radius * 2
     this.next_col = 0
@@ -16,15 +22,61 @@ function grid(columns, ball_radius, gap, offx, offy)
                             //there are now at least 3 balls in the group, the
                             //gropu is removed from the grid.
     //values to save state of moving down
+    this.moving = 0
     this.target = 0         //how far should the balls move
     this.time = 0           //how long do the balls have to move there
     this.taken = 0          //how much time has elapsed since the balls started moving
     this.current_move = 0   //how far have the balls moved so far
 
+    this.remove_self = function()
+    {
+      var keys = Object.keys(this.balls)
+      for(var index = 0; index < keys.length; index++)
+      {
+        var c = this.balls[keys[index]];
+        remove_object(c.id);
+      }
+      remove_object(this.id)
+    }
+
     this.move_down = function (time, rows=1)
     {
-        this.target = (this.ball_size + this.gap) * rows;
-        this.time = time
+        this.moving = 1
+        this.target += (this.ball_size + this.gap) * rows;
+        this.time += time
+    }
+
+    this.get_all_colors = function()
+    {
+      var colors = {}
+      var keys = Object.keys(this.balls)
+      for(var index = 0; index < keys.length; index++) {
+        var c = this.balls[keys[index]].color;
+        if (!(c in colors)) {
+          colors[c] = 0;
+        }
+      }
+      return Object.keys(colors)
+    }
+
+    this.height = function()
+    {
+      //get all locations
+      var locs = Object.keys(this.balls)
+      var min = Infinity, max = -Infinity;
+
+      for (var index = 0; index < locs.length; index++)
+      {
+          //get current location
+          loc = locs[index]
+          loc = [parseInt(loc.slice(0, loc.indexOf(','))),
+                  parseInt(loc.slice(loc.indexOf(',') + 1, loc.length))]
+          if(loc[0] < min)
+            min = loc[0]
+          if(loc[0] > max)
+            max = loc[0]
+      }
+      return max - min + 1;
     }
 
     this.intersect_grid = function (ball)
@@ -38,7 +90,7 @@ function grid(columns, ball_radius, gap, offx, offy)
         for (index = 0; index < adj.length; index++)
         {
             loc = adj[index]
-            if (this.in_grid(loc[0], loc[1]) && ball.intersect(this.balls[[loc[0], loc[1]]]))
+            if (loc[0] == this.rows || (this.in_grid(loc[0], loc[1]) && ball.intersect(this.balls[[loc[0], loc[1]]])))
             {
                 adj.sort(this.make_comp(this, ball));
                 for (index = 0; index < adj.length; index++)
@@ -47,14 +99,13 @@ function grid(columns, ball_radius, gap, offx, offy)
                     if (!this.in_grid(loc[0], loc[1]))
                     {
                         this.thingy = false
-                        this.insert_ball(ball, loc[0], loc[1])
-                        return true
+                        return [true, loc]
                     }
                 }
             }
         }
 
-        return false
+        return [false, null]
     }
 
     this.make_comp = function(grid, ball) {
@@ -72,27 +123,71 @@ function grid(columns, ball_radius, gap, offx, offy)
       }
     }
 
-    this.color_flood = function(row, col, color, group={}) {
-      if(this.in_grid(row, col) && this.balls[[row, col]].color == color) {
-        locs = [[row, col]];
-        group[[row, col]] = 0
-        adj = this.get_adjacent(row, col)
-        for(var index = 0; index < adj.length; index++) {
-          if(!([adj[index][0], adj[index][1]] in group)) {
-            locs = locs.concat(this.color_flood(adj[index][0], adj[index][1], color, group))
+    this.get_ball = function(row, col) {
+      if(this.in_grid(row, col))
+        return this.balls[[row, col]];
+    }
+
+    this.flood = function(row, col)
+    {
+      var marked = {}
+      var stack = []
+      var found = []
+      stack.push([row, col])
+
+      while (stack.length > 0)
+      {
+        var loc = stack.pop()
+        if (!(loc in marked))
+        {
+          marked[loc] = 0
+          if (this.in_grid(loc[0], loc[1]))
+          {
+            found.push(loc)
+            adj = this.get_adjacent(loc[0],loc[1])
+            for(var index = 0; index < adj.length; index++)
+            {
+              stack.push(adj[index])
+            }
           }
         }
-        return locs;
       }
-      else {
-        return []
+
+      return found
+    }
+
+    this.color_flood = function(row, col, color)
+    {
+      var marked = {}
+      var stack = []
+      var found = []
+      stack.push([row, col])
+
+      while (stack.length > 0)
+      {
+        var loc = stack.pop()
+        if (!(loc in marked))
+        {
+          marked[loc] = 0
+          if (this.in_grid(loc[0], loc[1]) && this.get_ball(loc[0], loc[1]).color == color)
+          {
+            found.push(loc)
+            adj = this.get_adjacent(loc[0],loc[1])
+            for(var index = 0; index < adj.length; index++)
+            {
+              stack.push(adj[index])
+            }
+          }
+        }
       }
+
+      return found
     }
 
     //Draws the grid on the screen
     this.draw = function (elapsed)
     {
-        if(this.time != 0)
+        if(this.moving == 1)
         {
             dy = this.target / this.time * elapsed;
             if(this.taken + elapsed >= this.time)
@@ -102,6 +197,7 @@ function grid(columns, ball_radius, gap, offx, offy)
                 this.time = 0;
                 this.taken = 0
                 this.current_move = 0
+                this.moving = 0
             }
             else
             {
@@ -131,6 +227,24 @@ function grid(columns, ball_radius, gap, offx, offy)
         if (Math.abs(row) % 2 == 0)
             col = (x - this.gap - this.offy - this.ball_size / 2) / (this.gap + this.ball_size)
         return [row, col]
+    }
+
+    this.add_rows = function (color_fn, rows)
+    {
+      for(var index = 0; index < rows; index++)
+      {
+        this.add_row(color_fn)
+      }
+    }
+
+    //adds a row of balls
+    this.add_row = function (color_fn)
+    {
+      for(var count = 0; count < this.columns; count++)
+      {
+        this.add_ball(color_fn())
+      }
+      this.move_down(0.1, 1)
     }
 
     //Adds a single ball to the grid
@@ -168,7 +282,73 @@ function grid(columns, ball_radius, gap, offx, offy)
             {
                 this.remove_ball(group[index][0], group[index][1])
             }
+            return group.length
         }
+        return 0
+    }
+
+    //ensure that all balls are connected to the top row, if they aren't
+    // connected to the top row, remove them
+    this.verify_grid = function ()
+    {
+        //get all locations
+        var locs = Object.keys(this.balls)
+        var index = 0
+        var removed = 0
+        //save all the balls we have checked.
+        var marked = {}
+        while (index < locs.length)
+        {
+            //get current index
+            loc = locs[index]
+            loc = [parseInt(loc.slice(0, loc.indexOf(','))),
+                    parseInt(loc.slice(loc.indexOf(',') + 1, loc.length))]
+            //make sure to increment index
+            index++
+            //check to make sure we haven't already verified this location
+            //  and make sure this location is in the grid
+            if (!(loc in marked))
+            {
+                //If this is passed, find this ball's group of balls
+                group = this.flood(loc[0], loc[1])
+                //find the max row out of the group
+                max_row = group[0][0]
+                for(var index2 = 1; index2 < group.length; index2++)
+                {
+                    //if a new max
+                    if(group[index2][0] > max_row)
+                    {
+                        //update the max
+                        max_row = group[index2][0]
+                    }
+                }
+                //with the max row found, check to make sure that the max row
+                //  is the same as the top row
+                if (max_row < this.rows - 1)
+                {
+                    //group is disconnected from top, cleanse the group
+                    for(var index2 = 0; index2 < group.length; index2++)
+                    {
+                        this.remove_ball(group[index2][0], group[index2][1])
+                        removed++
+                    }
+                }
+                //add all these locations to marked locations
+                for (var index2 = 0; index2 < group.length; index2++)
+                {
+                    marked[group[index2]] = 0;
+                }
+            }
+        }
+
+        //return number of removed balls
+        return removed
+    }
+
+    //Get number of balls in grid
+    this.size = function()
+    {
+        return Object.keys(this.balls).length
     }
 
     //Removes a ball at a given row and column
@@ -176,7 +356,7 @@ function grid(columns, ball_radius, gap, offx, offy)
     {
         if(this.in_grid(row, col))
         {
-            remove_object(this.balls[[row,col]].id)
+            this.balls[[row,col]].die(.2)
             delete this.balls[[row, col]]
             return true
         }
@@ -192,10 +372,6 @@ function grid(columns, ball_radius, gap, offx, offy)
     //Gets the adjacent locations to a spot on the grid as a list (with a hex layout)
     this.get_adjacent = function (row, col)
     {
-        //(0,0) (0,1) (0,2)
-        //  (1,0) (1,1) (1,2)
-        //(2,0) (2,1) (2,2)
-        //  (3,0) (3,1) (3,2)
         if (Math.abs(row) % 2 == 1)
         {
             return [[row - 1, col],
@@ -208,11 +384,11 @@ function grid(columns, ball_radius, gap, offx, offy)
         else
         {
             return [[row - 1, col - 1],
-                    [row - 1,col],
+                    [row - 1, col],
                     [row, col + 1],
                     [row, col - 1],
-                    [row + 1, col],
-                    [row + 1, col - 1]]
+                    [row + 1, col - 1],
+                    [row + 1, col]]
         }
     }
 

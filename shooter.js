@@ -1,9 +1,16 @@
+/* Copyright (c) 2016 Nicholas Maltbie
+ * MIT License
+ *
+ * shooter.js - bubble shooter / player control file
+ */
+
 //Define a shooter
-function shooter(basex, basey, ball_size, arrow_length, fire_speed)
+function shooter(basex, basey, ball_size, arrow_length, fire_speed, color_fn)
 {
   this.basex = basex;
   this.basey = basey;
   this.ball_size = ball_size;
+  this.gap = 3;
   this.arrow_length = arrow_length;
   this.min_angle = Math.PI / 24;
   this.max_angle = Math.PI * 23 / 24;
@@ -11,10 +18,40 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed)
   this.added = null;
   this.fired = null
   this.angle = 0;
+  this.can_fire = true
+  this.queue = []
+  this.queue_length = 4
+  this.loading = false
+  this.load_vel = 100
+  this.lost = false
+
+  this.remove_self = function()
+  {
+    if(this.added != null)
+    {
+      remove_object(this.added.id)
+    }
+    if(this.fired != null)
+    {
+      remove_object(this.fired.id)
+    }
+    this.queue.forEach(function(e) {remove_object(e.id)})
+
+    remove_object(this.id)
+  }
+
+  while(this.queue.length < this.queue_length)
+  {
+    var loaded = new ball(this.basex, this.basey, color_fn(), 0, 0, this.ball_size);
+    this.queue.push(loaded);
+    loaded.x = this.basex - (this.ball_size * 2 + this.gap) * (this.queue.length)
+    loaded.y = this.basey
+    add_object(loaded);
+  }
 
   this.fire = function(gun)
   {
-    if (gun.added != null) {
+    if (!this.loading && !this.lost && this.can_fire && gun.added != null) {
       gun.added.speedx = Math.cos(gun.angle) * gun.fire_speed;
       gun.added.speedy = Math.sin(gun.angle) * gun.fire_speed;
       gun.fired = gun.added;
@@ -22,14 +59,44 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed)
     }
   }
 
-  this.load = function(color)
+  this.load = function(color_fn)
   {
-    this.added = new ball(this.basex, this.basey, color, 0, 0, this.ball_size);
-    add_object(this.added);
+    this.added = this.queue.shift()
+
+    while(this.queue.length < this.queue_length)
+    {
+      this.loading = true
+      var loaded = new ball(this.basex, this.basey, color_fn(), 0, 0, this.ball_size);
+      this.queue.push(loaded);
+      loaded.x = this.basex - (this.ball_size * 2 + this.gap) * (this.queue.length + 1)
+      loaded.y = this.basey
+      add_object(loaded);
+    }
   }
 
   this.draw = function(elapsed)
   {
+    this.can_fire = true;
+    if(this.loading == false) {
+      if(this.added != null) {
+        this.added.x = this.basex;
+        this.added.y = this.basey;
+      }
+      for(var index = 0; index < this.queue.length; index++) {
+        this.queue[index].x = this.basex - (this.ball_size * 2 + this.gap) * (index + 1)
+        this.queue[index].y = this.basey
+      }
+    }
+    else  {
+      this.can_fire = false;
+      if(this.added != null)
+        this.added.speedx = this.load_vel;
+      var vel = this.load_vel
+      this.queue.forEach( function(b) {b.speedx = vel})
+      if (this.added != null && this.added.x >= this.basex) {
+        this.loading = false
+      }
+    }
 
     //draw an arrow for aiming
     dx = mouse.x - this.basex
@@ -48,36 +115,29 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed)
     }
     this.angle = angle;
 
+    ctx.strokeStyle = '#3d91ed'
+
     lenx = Math.cos(angle) * this.arrow_length;
     leny = Math.sin(angle) * this.arrow_length;
+    ctx.lineWidth = 3;
     //Draw main section of the arrow
     ctx.beginPath();
-    ctx.moveTo(this.basex, this.basey)
-    ctx.lineTo(this.basex + lenx, this.basey + leny)
+    ctx.moveTo(this.basex + 2, this.basey)
+    ctx.lineTo(this.basex + 2 + lenx, this.basey + leny)
     ctx.stroke();
     ctx.closePath();
     //Draw two edge lines of the arrow
     ctx.beginPath();
-    ctx.moveTo(this.basex + lenx, this.basey + leny)
-    ctx.lineTo(this.basex + lenx - Math.cos(angle + Math.PI / 6) * arrow_length / 4
+    ctx.moveTo(this.basex + 2 + lenx, this.basey + leny)
+    ctx.lineTo(this.basex + 2 + lenx - Math.cos(angle + Math.PI / 6) * arrow_length / 4
         , this.basey + leny - Math.sin(angle + Math.PI / 6) * arrow_length / 4)
     ctx.stroke();
     ctx.closePath();
     ctx.beginPath();
-    ctx.moveTo(this.basex + lenx, this.basey + leny)
-    ctx.lineTo(this.basex + lenx - Math.cos(angle - Math.PI / 6) * arrow_length / 4
+    ctx.moveTo(this.basex + 2 + lenx, this.basey + leny)
+    ctx.lineTo(this.basex + 2 + lenx - Math.cos(angle - Math.PI / 6) * arrow_length / 4
         , this.basey + leny - Math.sin(angle - Math.PI / 6) * arrow_length / 4)
     ctx.stroke();
     ctx.closePath();
-
-    //If a ball has been fired and is in motion
-    if(this.fired != null) {
-      hitGrid = game_grid.intersect_grid(this.fired);
-      //If ball has been added to the grid
-      if(hitGrid) {
-        this.fired = null;
-        this.load(get_color());
-      }
-    }
   }
 }
