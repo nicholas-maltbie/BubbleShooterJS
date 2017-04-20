@@ -11,6 +11,7 @@ function manager(ball_shooter, game_grid)
   this.shots = 0
   this.lose = false
   this.lose_height = 14
+  this.cycle = false
 
   this.draw = function(elapsed) {
     //If a ball has been fired and is in motion
@@ -20,15 +21,18 @@ function manager(ball_shooter, game_grid)
       if(hitGrid) {
         this.shots += 1
         this.ball_shooter.fired = null;
+        this.ball_shooter.load(get_color);
+        this.cycle = true
       }
     }
 
     //reload the ball shooter if elapsed time
-    if (this.ball_shooter.added == null && this.ball_shooter.fired == null)
+    if (this.cycle)
     {
       this.wait += elapsed;
       if (this.wait >= this.reload)
       {
+        this.cycle = false;
         if(this.shots % this.expand == 0)
         {
           this.game_grid.add_row(get_color)
@@ -38,7 +42,6 @@ function manager(ball_shooter, game_grid)
             this.expand = this.min_expand;
           }
         }
-        this.ball_shooter.load(get_color);
         this.wait = 0
         if (game_grid.height() >= this.lose_height) {
           this.lose = true;
@@ -46,6 +49,7 @@ function manager(ball_shooter, game_grid)
         }
       }
     }
+    
     if(this.lose) {
       ctx.lineWidth = 3
       ctx.font = "65px Comic Sans MS";
