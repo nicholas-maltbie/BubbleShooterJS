@@ -13,7 +13,7 @@ function manager(ball_shooter, game_grid)
   this.lose_height = 14
   this.cycle = false
   this.score = 0
-  this.pop_score_fn = function (pop) {return Math.floor(5 ** 1.5)}
+  this.pop_score_fn = function (pop) {return Math.floor(pop ** 1.5)}
   this.extra_score_fn = function (extra) {return extra}
 
 
