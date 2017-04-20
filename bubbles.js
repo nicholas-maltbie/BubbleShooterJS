@@ -12,7 +12,7 @@ var mouse = {};
 var game_grid = null;
 
 var initial_colors = ['red', 'blue', '#eddd2d', '#54e202']
-var add_colors = ['#0ad89a', 'magenta', '#f4bf42']
+var add_colors = ['#0ad89a', 'magenta', '#c46907']
 var game_colors = initial_colors
 
 mouse.x = 0;
