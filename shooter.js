@@ -10,7 +10,7 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed, color_fn)
   this.basex = basex;
   this.basey = basey;
   this.ball_size = ball_size;
-  this.gap = 10;
+  this.gap = 3;
   this.arrow_length = arrow_length;
   this.min_angle = Math.PI / 24;
   this.max_angle = Math.PI * 23 / 24;
@@ -29,7 +29,7 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed, color_fn)
   {
     var loaded = new ball(this.basex, this.basey, color_fn(), 0, 0, this.ball_size);
     this.queue.push(loaded);
-    loaded.x = this.basex - (this.ball_size * 2 + this.gap) * (this.queue.length + 1)
+    loaded.x = this.basex - (this.ball_size * 2 + this.gap) * (this.queue.length)
     loaded.y = this.basey
     add_object(loaded);
   }
@@ -99,6 +99,8 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed, color_fn)
       }
     }
     this.angle = angle;
+
+    ctx.strokeStyle = '#3d91ed'
 
     lenx = Math.cos(angle) * this.arrow_length;
     leny = Math.sin(angle) * this.arrow_length;

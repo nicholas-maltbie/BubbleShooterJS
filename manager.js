@@ -4,6 +4,19 @@
  * manager.js - game moderator file
  */
 
+//define function for line object
+function line(x1, y1, x2, y2, thickness, color) {
+  this.draw = function() {
+    //Draw death line
+    ctx.strokeStyle = color
+    ctx.lineWidth = thickness
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  }
+}
+
 //define a game manager
 function manager(ball_shooter, game_grid)
 {
@@ -22,7 +35,9 @@ function manager(ball_shooter, game_grid)
   this.pop_score_fn = function (pop) {return Math.floor(pop ** 1.5)}
   this.extra_score_fn = function (extra) {return extra}
 
-
+  var death_height = (this.game_grid.ball_size + this.game_grid.gap) * (this.lose_height - 1) - game_grid.gap
+  death_line = new line(0, death_height, canvas.width, death_height, 1, 'red')
+  add_object(death_line, -1)
 
   this.draw = function(elapsed) {
     //If a ball has been fired and is in motion
@@ -71,8 +86,7 @@ function manager(ball_shooter, game_grid)
         }
       }
     }
-
-
+    ctx.strokeStyle = 'black'
 
     if(this.lose) {
       var scoreText = "Score: " + this.score
@@ -103,8 +117,11 @@ function manager(ball_shooter, game_grid)
       ctx.fillStyle = "white";
       ctx.textAlign = "left"
       var scoreText = "Score: " + this.score
-      ctx.fillText(scoreText, canvas.width - ctx.measureText(scoreText).width - 10, canvas.height - 13)
-      ctx.strokeText(scoreText, canvas.width - ctx.measureText(scoreText).width - 10, canvas.height - 13)
+      var nextRow = "Next: " + (this.expand - this.shots)
+      ctx.fillText(scoreText, canvas.width - ctx.measureText(scoreText).width - 10, canvas.height - 10)
+      ctx.strokeText(scoreText, canvas.width - ctx.measureText(scoreText).width - 10, canvas.height - 10)
+      ctx.fillText(nextRow, 10, canvas.height - 10)
+      ctx.strokeText(nextRow, 10, canvas.height - 10)
     }
   }
 }
