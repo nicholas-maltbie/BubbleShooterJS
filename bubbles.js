@@ -97,7 +97,6 @@ function reset()
   ball_shooter = new shooter(rectangle.width / 2, rectangle.height - 20, 10, 75, 400, get_color);
   add_object(ball_shooter, -1)
   ball_shooter.load(get_color);
-  canvas.addEventListener('click', function(event) {ball_shooter.fire(ball_shooter)}, false)
 
   //Create game grid
   game_grid = new grid(22, 10, 1, 14, 10);
@@ -156,7 +155,6 @@ function setup()
     ball_shooter = new shooter(rectangle.width / 2, rectangle.height - 20, 10, 75, 400, get_color);
     add_object(ball_shooter, -1)
     ball_shooter.load(get_color);
-    canvas.addEventListener('click', function(event) {ball_shooter.fire(ball_shooter)}, false)
 
     //Create game grid
     game_grid = new grid(22, 10, 1, 14, 10);
@@ -187,12 +185,12 @@ function fillRoundRect(x, y, w, h, radius)
     ctx.fill();
 }
 
-function roundRect(x, y, w, h, radius)
+function roundRect(x, y, w, h, radius, thickness=4)
 {
     var r = x + w;
     var b = y + h;
     ctx.beginPath();
-    ctx.lineWidth="4";
+    ctx.lineWidth=thickness;
     ctx.moveTo(x+radius, y);
     ctx.lineTo(r-radius, y);
     ctx.quadraticCurveTo(r, y, r, y+radius);
