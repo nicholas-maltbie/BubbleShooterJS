@@ -16,7 +16,7 @@ The game is currently hosted live to play on [my website]
 
 To add the game to your website, add the following statement to the html page.
 
-'''html
+```HTML
 
 <div align='center'>
 
@@ -57,9 +57,9 @@ To add the game to your website, add the following statement to the html page.
     src="https://rawgit.com/nicholas-maltbie/BubbleShooterJS/master/bubbles.js">
 
   </script>
-  
+
 </div>
-'''
+```
 
 To see an example of this, look at the game imported on [my website]
 (https://nicholas-maltbie.github.io/bubble.html).
