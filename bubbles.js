@@ -1,4 +1,4 @@
-/* Copyright (c) 2016 Nicholas Maltbie
+/* Copyright (c) 2017 Nicholas Maltbie
  * MIT License
  *
  * Bubble.js - main file
