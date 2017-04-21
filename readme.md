@@ -17,47 +17,26 @@ The game is currently hosted live to play on [my website]
 To add the game to your website, add the following statement to the html page.
 
 ```HTML
-
 <div align='center'>
-
   <link rel="stylesheet" type="text/css"
-
     href="https://rawgit.com/nicholas-maltbie/BubbleShooterJS/master/bubblestyle.css">
-
   </link>
-
   <canvas id="game-canvas" style='maring:0 auto; background: #eee' width="480" height="320"></canvas>
-
   <script type='application/javascript'
-
     src="https://rawgit.com/nicholas-maltbie/BubbleShooterJS/master/grid.js">
-
   </script>
-
   <script type='application/javascript'
-
     src="https://rawgit.com/nicholas-maltbie/BubbleShooterJS/master/ball.js">
-
   </script>
-
   <script type='application/javascript'
-
     src="https://rawgit.com/nicholas-maltbie/BubbleShooterJS/master/shooter.js">
-
   </script>
-
   <script type='application/javascript'
-
     src="https://rawgit.com/nicholas-maltbie/BubbleShooterJS/master/manager.js">
-
   </script>
-
   <script type='application/javascript'
-
     src="https://rawgit.com/nicholas-maltbie/BubbleShooterJS/master/bubbles.js">
-
   </script>
-
 </div>
 ```
 
