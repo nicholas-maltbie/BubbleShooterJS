@@ -13,7 +13,7 @@ var game_grid = null;
 
 var initial_colors = ['red', 'blue', '#eddd2d', '#54e202']
 var add_colors = ['#0ad89a', 'magenta', '#c46907']
-var game_colors = initial_colors
+var game_colors = initial_colors.slice(0)
 
 mouse.x = 0;
 mouse.y = 0;
@@ -47,6 +47,7 @@ function get_color()
 //function to track mouse movement
 function mouse_move(e)
 {
+    rectangle = canvas.getBoundingClientRect();
     var x = e.clientX - rectangle.left;
     var y = e.clientY - rectangle.top;
     mouse.x = x;
@@ -88,7 +89,7 @@ function remove_object(id)
 //resets the game
 function reset()
 {
-  this.game_colors = initial_colors;
+  game_colors = initial_colors.slice(0);
   game_manager.remove_self()
   ball_shooter.remove_self()
   game_grid.remove_self()
