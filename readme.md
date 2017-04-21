@@ -9,8 +9,7 @@ Doc.html can be used to view the game.
 
 The bubble.js file uses a canvas with the id "myCanvas"
 
-The game is currently hosted live to play on [my website]
-(https://nicholas-maltbie.github.io/bubble.html).
+The game is currently hosted live to play on [my website](https://nicholas-maltbie.github.io/bubble.html).
 
 ### Can I Use This Game? ###
 
@@ -40,8 +39,7 @@ To add the game to your website, add the following statement to the html page.
 </div>
 ```
 
-To see an example of this, look at the game imported on [my website]
-(https://nicholas-maltbie.github.io/bubble.html).
+To see an example of this, look at the game imported on [my website](https://nicholas-maltbie.github.io/bubble.html).
 
 ### Copyright ###
 This code is under the MIT License Copyright (c) 2017 Nicholas Maltbie
