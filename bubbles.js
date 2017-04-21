@@ -11,6 +11,7 @@ var rectangle = canvas.getBoundingClientRect();
 var mouse = {};
 var game_grid = null;
 
+
 var initial_colors = ['red', 'blue', '#eddd2d', '#54e202']
 var add_colors = ['#0ad89a', 'magenta', '#c46907']
 var game_colors = initial_colors.slice(0)
@@ -18,10 +19,12 @@ var game_colors = initial_colors.slice(0)
 mouse.x = 0;
 mouse.y = 0;
 mouse.down = 0;
+
 //setup mouse listener
-canvas.addEventListener('mousemove', mouse_move, false)
-canvas.addEventListener('mousedown', function(evt) {mouse.down = 1}, false)
-canvas.addEventListener('mouseup', function(evt) {mouse.down = 0}, false)
+//canvas.addEventListener('mousemove', mouse_move, false)
+document.onmousemove = mouse_move;
+document.body.onmousedown = function(evt) {mouse.down = 1}
+document.body.onmouseup = function(evt) {mouse.down = 0}
 
 var delay = 20 //delay between frames, 20 ms
 //Get start time
