@@ -1,0 +1,12 @@
+/* Copyright (c) 2017 Nicholas Maltbie
+ * MIT License
+ *
+ * bubblestyle.css - stylesheet file for bubble game
+ */
+
+#game-canvas
+{
+  display: block;
+  margin: 0 auto;
+  background: #eee;
+}

@@ -5,7 +5,7 @@
  */
 
 //Game canvas and context
-var canvas = document.getElementById("myCanvas");
+var canvas = document.getElementById("game-canvas");
 var ctx = canvas.getContext("2d");
 var rectangle = canvas.getBoundingClientRect();
 var mouse = {};
