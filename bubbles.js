@@ -1,4 +1,4 @@
-/* Copyright (c) 2016 Nicholas Maltbie
+/* Copyright (c) 2017 Nicholas Maltbie
  * MIT License
  *
  * Bubble.js - main file
@@ -11,17 +11,20 @@ var rectangle = canvas.getBoundingClientRect();
 var mouse = {};
 var game_grid = null;
 
+
 var initial_colors = ['red', 'blue', '#eddd2d', '#54e202']
 var add_colors = ['#0ad89a', 'magenta', '#c46907']
-var game_colors = initial_colors
+var game_colors = initial_colors.slice(0)
 
 mouse.x = 0;
 mouse.y = 0;
 mouse.down = 0;
+
 //setup mouse listener
-canvas.addEventListener('mousemove', mouse_move, false)
-canvas.addEventListener('mousedown', function(evt) {mouse.down = 1}, false)
-canvas.addEventListener('mouseup', function(evt) {mouse.down = 0}, false)
+//canvas.addEventListener('mousemove', mouse_move, false)
+document.onmousemove = mouse_move;
+document.body.onmousedown = function(evt) {mouse.down = 1}
+document.body.onmouseup = function(evt) {mouse.down = 0}
 
 var delay = 20 //delay between frames, 20 ms
 //Get start time
@@ -47,6 +50,7 @@ function get_color()
 //function to track mouse movement
 function mouse_move(e)
 {
+    rectangle = canvas.getBoundingClientRect();
     var x = e.clientX - rectangle.left;
     var y = e.clientY - rectangle.top;
     mouse.x = x;
@@ -88,7 +92,7 @@ function remove_object(id)
 //resets the game
 function reset()
 {
-  this.game_colors = initial_colors;
+  game_colors = initial_colors.slice(0);
   game_manager.remove_self()
   ball_shooter.remove_self()
   game_grid.remove_self()
@@ -96,7 +100,6 @@ function reset()
   ball_shooter = new shooter(rectangle.width / 2, rectangle.height - 20, 10, 75, 400, get_color);
   add_object(ball_shooter, -1)
   ball_shooter.load(get_color);
-  canvas.addEventListener('click', function(event) {ball_shooter.fire(ball_shooter)}, false)
 
   //Create game grid
   game_grid = new grid(22, 10, 1, 14, 10);
@@ -155,7 +158,6 @@ function setup()
     ball_shooter = new shooter(rectangle.width / 2, rectangle.height - 20, 10, 75, 400, get_color);
     add_object(ball_shooter, -1)
     ball_shooter.load(get_color);
-    canvas.addEventListener('click', function(event) {ball_shooter.fire(ball_shooter)}, false)
 
     //Create game grid
     game_grid = new grid(22, 10, 1, 14, 10);
@@ -186,12 +188,12 @@ function fillRoundRect(x, y, w, h, radius)
     ctx.fill();
 }
 
-function roundRect(x, y, w, h, radius)
+function roundRect(x, y, w, h, radius, thickness=4)
 {
     var r = x + w;
     var b = y + h;
     ctx.beginPath();
-    ctx.lineWidth="4";
+    ctx.lineWidth=thickness;
     ctx.moveTo(x+radius, y);
     ctx.lineTo(r-radius, y);
     ctx.quadraticCurveTo(r, y, r, y+radius);

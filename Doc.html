@@ -1,4 +1,4 @@
-<!-- Copyright (c) 2016 Nicholas Maltbie
+<!-- Copyright (c) 2017 Nicholas Maltbie
      MIT License
 
      Doc.html - Example display for game
@@ -14,29 +14,19 @@
         width: 480px;
         align-items: center;
       }
-    	#game
+    	canvas
       {
         background: #eee;
-        display: block;
-      }
-      #reset
-      {
-        margin-top: 10px;
-        vertical-align: super;
-        display: block;
       }
     </style>
 </head>
 <body>
   <div class='container'>
-    <div id="game">
-      <canvas id="myCanvas" width="480" height="320"></canvas>
-      <script src='grid.js'></script>
-      <script src='ball.js'></script>
-      <script src='shooter.js'></script>
-      <script src='manager.js'></script>
-      <script src='bubbles.js'></script>
-    </div>
-    <button id="reset" type="button" onclick="reset()">Restart</button>
+    <canvas id="myCanvas" width="480" height="320"></canvas>
+    <script src='grid.js'></script>
+    <script src='ball.js'></script>
+    <script src='shooter.js'></script>
+    <script src='manager.js'></script>
+    <script src='bubbles.js'></script>
   </div>
 </body>

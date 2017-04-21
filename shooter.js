@@ -1,4 +1,4 @@
-/* Copyright (c) 2016 Nicholas Maltbie
+/* Copyright (c) 2017 Nicholas Maltbie
  * MIT License
  *
  * shooter.js - bubble shooter / player control file
@@ -24,6 +24,7 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed, color_fn)
   this.loading = false
   this.load_vel = 100
   this.lost = false
+  this.prev_mouse_down = 0
 
   this.remove_self = function()
   {
@@ -49,16 +50,6 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed, color_fn)
     add_object(loaded);
   }
 
-  this.fire = function(gun)
-  {
-    if (!this.loading && !this.lost && this.can_fire && gun.added != null) {
-      gun.added.speedx = Math.cos(gun.angle) * gun.fire_speed;
-      gun.added.speedy = Math.sin(gun.angle) * gun.fire_speed;
-      gun.fired = gun.added;
-      gun.added = null;
-    }
-  }
-
   this.load = function(color_fn)
   {
     this.added = this.queue.shift()
@@ -76,8 +67,16 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed, color_fn)
 
   this.draw = function(elapsed)
   {
-    this.can_fire = true;
+    if (this.prev_mouse_down && !mouse.down && !this.loading &&
+          !this.lost && this.can_fire && this.added != null) {
+      this.added.speedx = Math.cos(this.angle) * this.fire_speed;
+      this.added.speedy = Math.sin(this.angle) * this.fire_speed;
+      this.fired = this.added;
+      this.added = null;
+    }
+
     if(this.loading == false) {
+      this.can_fire = true;
       if(this.added != null) {
         this.added.x = this.basex;
         this.added.y = this.basey;
@@ -139,5 +138,7 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed, color_fn)
         , this.basey + leny - Math.sin(angle - Math.PI / 6) * arrow_length / 4)
     ctx.stroke();
     ctx.closePath();
+
+    this.prev_mouse_down = mouse.down
   }
 }
