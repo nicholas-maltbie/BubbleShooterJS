@@ -69,7 +69,7 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed, color_fn)
 
   this.draw = function(elapsed)
   {
-    if (!mouse.prev_down && this.delay_down && this.prev_held < this.click_time &&
+    if (!mouse.prev_down && this.delay_down && /*this.prev_held < this.click_time &&*/
         !this.loading && !this.lost && this.can_fire && this.added != null) {
       this.added.speedx = Math.cos(this.angle) * this.fire_speed;
       this.added.speedy = Math.sin(this.angle) * this.fire_speed;
