@@ -25,6 +25,9 @@ mouse.down = 0;
 document.onmousemove = mouse_move;
 document.body.onmousedown = function(evt) {mouse.down = 1}
 document.body.onmouseup = function(evt) {mouse.down = 0}
+document.addEventListener('touchmove', touch_move, false)
+document.addEventListener('touchstart', function(evt) {mouse.down = 1; touch_move(evt)}, false)
+document.addEventListener('touchend', function(evt) {mouse.down = 0}, false)
 
 var delay = 20 //delay between frames, 20 ms
 //Get start time
@@ -45,6 +48,16 @@ setup()
 function get_color()
 {
   return game_colors[Math.floor(Math.random() * game_colors.length)];
+}
+
+function touch_move(e)
+{
+    var touch = e.touches[0];
+    rectangle = canvas.getBoundingClientRect();
+    var x = touch.pageX - rectangle.left;
+    var y = touch.pageY - rectangle.top;
+    mouse.x = x;
+    mouse.y = y;
 }
 
 //function to track mouse movement
