@@ -106,6 +106,12 @@ function manager(ball_shooter, game_grid)
     }
     ctx.strokeStyle = 'black'
 
+    if(draw_button(canvas.width/2 + 75, canvas.height - 40, "center", gap=10, text_size=20, border_radius = 5))
+    {
+        ball_shooter.delay_down = false
+        fixed = !fixed;
+    }
+    
     if(this.lose) {
       var scoreText = "Score: " + this.score
       ctx.font = "65px Comic Sans MS";

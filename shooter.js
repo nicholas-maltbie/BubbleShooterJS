@@ -24,7 +24,9 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed, color_fn)
   this.loading = false
   this.load_vel = 100
   this.lost = false
-  this.click_time = Math.Infinity
+  this.click_time = 0.5
+  this.delay_down = 0
+  this.prev_held = 0
 
   this.remove_self = function()
   {
@@ -67,7 +69,7 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed, color_fn)
 
   this.draw = function(elapsed)
   {
-    if (mouse.prev_down && !mouse.down && /*.held <= this.click_time &&*/
+    if (!mouse.prev_down && this.delay_down && this.prev_held < this.click_time &&
         !this.loading && !this.lost && this.can_fire && this.added != null) {
       this.added.speedx = Math.cos(this.angle) * this.fire_speed;
       this.added.speedy = Math.sin(this.angle) * this.fire_speed;
@@ -142,5 +144,7 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed, color_fn)
         , this.basey + leny - Math.sin(angle - Math.PI / 6) * arrow_length / 4)
     ctx.stroke();
     ctx.closePath();
+    this.delay_down = mouse.prev_down
+    this.prev_held = mouse.held
   }
 }
