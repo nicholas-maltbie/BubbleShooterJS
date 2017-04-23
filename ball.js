@@ -4,6 +4,9 @@
  * Ball.js - graphcial and physics ball file
  */
 
+ var left = 0
+ var right = 480
+ 
 //function to make a ball
 function ball(x_start, y_start, color, speedx, speedy, radius)
 {
@@ -59,8 +62,8 @@ function ball(x_start, y_start, color, speedx, speedy, radius)
         var dy = this.speedy * elapsed
 
         //If ball goes off the screen switch direction.
-        if (dx + this.x + this.radius / 2 > canvas.width - this.radius ||
-                dx + this.x - this.radius / 2 < this.radius) {
+        if (dx + this.x + this.radius / 2 > right - this.radius ||
+                dx + this.x - this.radius / 2 < this.radius + left) {
             this.speedx = -this.speedx
             dx = -dx
         }

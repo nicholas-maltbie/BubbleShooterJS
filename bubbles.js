@@ -11,6 +11,8 @@ var rectangle = canvas.getBoundingClientRect();
 var mouse = {};
 var game_grid = null;
 
+right = canvas.width;
+left = 0
 
 var initial_colors = ['red', 'blue', '#eddd2d', '#54e202']
 var add_colors = ['#0ad89a', 'magenta', '#c46907']
@@ -19,6 +21,8 @@ var game_colors = initial_colors.slice(0)
 mouse.x = 0;
 mouse.y = 0;
 mouse.down = 0;
+mouse.prev_down = 0;
+mouse.held = 0;
 
 //setup mouse listener
 //canvas.addEventListener('mousemove', mouse_move, false)
@@ -26,7 +30,7 @@ document.onmousemove = mouse_move;
 document.body.onmousedown = function(evt) {mouse.down = 1}
 document.body.onmouseup = function(evt) {mouse.down = 0}
 document.addEventListener('touchmove', touch_move, false)
-document.addEventListener('touchstart', function(evt) {mouse.down = 1}, false)
+document.addEventListener('touchstart', function(evt) {mouse.down = 1; touch_move(evt)}, false)
 document.addEventListener('touchend', function(evt) {mouse.down = 0}, false)
 
 var delay = 20 //delay between frames, 20 ms
@@ -150,6 +154,18 @@ function draw()
       }
     })
 
+    
+    //update mouse
+    mouse.prev_down = mouse.down
+    if (mouse.down) 
+    {
+        mouse.held += elapsed
+    }
+    else 
+    {
+        mouse.held = 0
+    }
+    
     //update previous time
     prev_time = time
 }
@@ -217,6 +233,46 @@ function roundRect(x, y, w, h, radius, thickness=4)
     ctx.lineTo(x, y+radius);
     ctx.quadraticCurveTo(x, y, x+radius, y);
     ctx.stroke();
+}
+
+function draw_button(x, y, content, gap=10, text_size=30, border_radius = 10, 
+    border_thickness=3, font="Comic Sans MS", fill='#eee', text_color='white', 
+    fill_hover='#ccc', text_hover='#ddd', fill_down='#aaa', text_down='#bbb', 
+    border='black', text_border='black')
+{
+    ctx.textAlign = "center";
+    pressed = false
+    ctx.font = text_size + "px " + font;
+    var retry = content
+    var box_width = ctx.measureText(retry).width
+    
+    if(mouse.x >= x - box_width / 2 - gap &&
+        mouse.x <= x - box_width / 2 + box_width + gap &&
+        mouse.y >= y && mouse.y <= y + text_size + gap)
+    {
+        fill = fill_hover
+        text_color = text_hover
+        if(mouse.down) {
+            fill = fill_down
+            text_color = text_down
+        }
+        if(mouse.prev_down && !mouse.down)
+        {
+            pressed = true;
+        }
+    }
+    ctx.fillStyle = fill;
+    fillRoundRect(x - box_width / 2 - gap, y, 
+        box_width + gap * 2, text_size + gap, border_radius)
+    ctx.fillStyle = border
+    roundRect(x - box_width / 2 - gap, y, 
+        box_width + gap * 2, text_size + gap, border_radius, border_thickness)
+    ctx.fillStyle = text_color
+    ctx.fillText(retry, x, y + text_size / 2 + gap)
+    ctx.fillStyle = text_border
+    ctx.lineWidth = 1
+    ctx.strokeText(retry, x, y + text_size / 2 + gap)
+    return pressed;
 }
 
 //set draw to every 20 ms
