@@ -11,23 +11,29 @@ var rectangle = canvas.getBoundingClientRect();
 var mouse = {};
 var game_grid = null;
 
+var game_width = 480;
+var game_height = 300;
+var fixed = false;
+
+var defaultZ = canvas.style.zIndex 
 
 var initial_colors = ['red', 'blue', '#eddd2d', '#54e202']
-var add_colors = ['#0ad89a', 'magenta', '#c46907']
+var add_colors = ['#00d8ff', 'magenta', '#c46907']
 var game_colors = initial_colors.slice(0)
 
 mouse.x = 0;
 mouse.y = 0;
 mouse.down = 0;
+mouse.prev_down = 0;
+mouse.held = 0;
 
 //setup mouse listener
-//canvas.addEventListener('mousemove', mouse_move, false)
-document.onmousemove = mouse_move;
-document.body.onmousedown = function(evt) {mouse.down = 1}
-document.body.onmouseup = function(evt) {mouse.down = 0}
+document.addEventListener('mousemove', mouse_move, false)
+canvas.addEventListener('mousedown', function(evt) {mouse.down = 1}, false)
+canvas.addEventListener('mouseup', function(evt) {mouse.down = 0}, false)
 document.addEventListener('touchmove', touch_move, false)
-document.addEventListener('touchstart', function(evt) {mouse.down = 1}, false)
-document.addEventListener('touchend', function(evt) {mouse.down = 0}, false)
+canvas.addEventListener('touchstart', function(evt) {mouse.down = 1; touch_move(evt)}, false)
+canvas.addEventListener('touchend', function(evt) {mouse.down = 0}, false)
 
 var delay = 20 //delay between frames, 20 ms
 //Get start time
@@ -54,8 +60,8 @@ function touch_move(e)
 {
     var touch = e.touches[0];
     rectangle = canvas.getBoundingClientRect();
-    var x = touch.pageX - rectangle.left;
-    var y = touch.pageY - rectangle.top;
+    var x = touch.clientX - rectangle.left;
+    var y = touch.clientY - rectangle.top;
     mouse.x = x;
     mouse.y = y;
 }
@@ -130,7 +136,7 @@ function draw()
 {
     //clear canvas at start of frame
     clear();
-
+    
     //get current time
     var date = new Date()
     var time = date.getTime()
@@ -150,6 +156,31 @@ function draw()
       }
     })
 
+    
+    if(fixed) {
+        canvas.style.position = 'fixed'
+        canvas.style.zIndex = '999'
+        canvas.style.left = window.innerWidth / 2 - canvas.width / 2
+        canvas.style.top = window.innerHeight / 2 - canvas.height / 2
+    }
+    else {
+        canvas.style.zIndex = defaultZ
+        canvas.style.position = 'relative'
+        canvas.style.left = 0
+        canvas.style.top = 0
+    }
+    
+    //update mouse
+    mouse.prev_down = mouse.down
+    if (mouse.down) 
+    {
+        mouse.held += elapsed
+    }
+    else 
+    {
+        mouse.held = 0
+    }
+    
     //update previous time
     prev_time = time
 }
@@ -181,6 +212,46 @@ function setup()
 
     game_manager = new manager(ball_shooter, game_grid)
     add_object(game_manager, 10)
+}
+
+function draw_button(x, y, content, gap=10, text_size=30, border_radius = 10, 
+    border_thickness=3, font="Comic Sans MS", fill='#eee', text_color='white', 
+    fill_hover='#ccc', text_hover='#ddd', fill_down='#aaa', text_down='#bbb', 
+    border='black', text_border='black')
+{
+    ctx.textAlign = "center";
+    pressed = false
+    ctx.font = text_size + "px " + font;
+    var retry = content
+    var box_width = ctx.measureText(retry).width
+    
+    if(mouse.x >= x - box_width / 2 - gap &&
+        mouse.x <= x - box_width / 2 + box_width + gap &&
+        mouse.y >= y && mouse.y <= y + text_size + gap)
+    {
+        fill = fill_hover
+        text_color = text_hover
+        if(mouse.down) {
+            fill = fill_down
+            text_color = text_down
+        }
+        if(mouse.prev_down && !mouse.down)
+        {
+            pressed = true;
+        }
+    }
+    ctx.fillStyle = fill;
+    fillRoundRect(x - box_width / 2 - gap, y, 
+        box_width + gap * 2, text_size + gap, border_radius)
+    ctx.fillStyle = border
+    roundRect(x - box_width / 2 - gap, y, 
+        box_width + gap * 2, text_size + gap, border_radius, border_thickness)
+    ctx.fillStyle = text_color
+    ctx.fillText(retry, x, y + text_size)
+    ctx.fillStyle = text_border
+    ctx.lineWidth = 1
+    ctx.strokeText(retry, x, y + text_size)
+    return pressed;
 }
 
 function fillRoundRect(x, y, w, h, radius)

@@ -106,6 +106,12 @@ function manager(ball_shooter, game_grid)
     }
     ctx.strokeStyle = 'black'
 
+    if(draw_button(canvas.width/2 + 75, canvas.height - 40, "center", gap=10, text_size=20, border_radius = 5))
+    {
+        ball_shooter.delay_down = false
+        fixed = !fixed;
+    }
+    
     if(this.lose) {
       var scoreText = "Score: " + this.score
       ctx.font = "65px Comic Sans MS";
@@ -128,36 +134,11 @@ function manager(ball_shooter, game_grid)
       ctx.font = "40px Comic Sans MS";
       ctx.fillText(scoreText, canvas.width / 2, canvas.height/2 + 15)
       ctx.strokeText(scoreText, canvas.width / 2, canvas.height/2 + 15)
-
-      ctx.font = "30px Comic Sans MS";
-      var retry = 'retry'
-      var box_width = ctx.measureText(retry).width
-      dark = "#eee"
-      text_color = "white"
-      if(mouse.x >= canvas.width / 2 - box_width / 2 - 10 &&
-          mouse.x <= canvas.width / 2 - box_width / 2 + box_width + 10 &&
-          mouse.y >= canvas.height / 2 + 25 && mouse.y <= canvas.height / 2 + 65)
+      
+      if(draw_button(canvas.width / 2, canvas.height / 2 + 25, 'retry'))
       {
-          dark = "#ccc"
-          text_color = "#ddd"
-          if(mouse.down) {
-            dark = "#aaa"
-            text_color = "#bbb"
-          }
-          if(this.prev_mouse_down && !mouse.down)
-          {
-              reset()
-          }
+          reset();
       }
-      ctx.fillStyle = dark;
-      fillRoundRect(canvas.width / 2 - box_width / 2 - 10, canvas.height / 2 + 25, box_width + 20, 40, 10)
-      ctx.fillStyle = "black"
-      roundRect(canvas.width / 2 - box_width / 2 - 10, canvas.height / 2 + 25, box_width + 20, 40, 10, 3)
-      ctx.fillStyle = text_color
-      ctx.fillText(retry, canvas.width / 2, canvas.height/2 + 52)
-      ctx.fillStyle = "black"
-      ctx.lineWidth = 1
-      ctx.strokeText(retry, canvas.width / 2, canvas.height/2 + 52)
     }
     else {
       ctx.lineWidth = 1

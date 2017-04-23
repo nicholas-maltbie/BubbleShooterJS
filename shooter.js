@@ -24,9 +24,9 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed, color_fn)
   this.loading = false
   this.load_vel = 100
   this.lost = false
-  this.prev_mouse_down = 0
-  this.click_held = 0
-  this.click_time = 0.25
+  this.click_time = 0.5
+  this.delay_down = 0
+  this.prev_held = 0
 
   this.remove_self = function()
   {
@@ -69,7 +69,7 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed, color_fn)
 
   this.draw = function(elapsed)
   {
-    if (this.prev_mouse_down && !mouse.down && this.click_held <= this.click_time &&
+    if (!mouse.prev_down && this.delay_down && this.prev_held < this.click_time &&
         !this.loading && !this.lost && this.can_fire && this.added != null) {
       this.added.speedx = Math.cos(this.angle) * this.fire_speed;
       this.added.speedy = Math.sin(this.angle) * this.fire_speed;
@@ -79,14 +79,6 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed, color_fn)
 
     if(this.loading == false) {
       this.can_fire = true;
-      if(this.added != null) {
-        this.added.x = this.basex;
-        this.added.y = this.basey;
-      }
-      for(var index = 0; index < this.queue.length; index++) {
-        this.queue[index].x = this.basex - (this.ball_size * 2 + this.gap) * (index + 1)
-        this.queue[index].y = this.basey
-      }
     }
     else  {
       this.can_fire = false;
@@ -96,6 +88,18 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed, color_fn)
       this.queue.forEach( function(b) {b.speedx = vel})
       if (this.added != null && this.added.x >= this.basex) {
         this.loading = false
+          if(this.added != null) {
+            this.added.x = this.basex;
+            this.added.y = this.basey;
+            this.added.speedx = 0;
+            this.added.speedy = 0;
+          }
+          for(var index = 0; index < this.queue.length; index++) {
+            this.queue[index].x = this.basex - (this.ball_size * 2 + this.gap) * (index + 1)
+            this.queue[index].y = this.basey
+            this.queue[index].speedx = 0
+            this.queue[index].speedy = 0
+          }
       }
     }
 
@@ -140,15 +144,7 @@ function shooter(basex, basey, ball_size, arrow_length, fire_speed, color_fn)
         , this.basey + leny - Math.sin(angle - Math.PI / 6) * arrow_length / 4)
     ctx.stroke();
     ctx.closePath();
-
-    this.prev_mouse_down = mouse.down
-    if(mouse.down) 
-    {
-        this.click_held += elapsed
-    }
-    else 
-    {
-        this.click_held = 0
-    }
+    this.delay_down = mouse.prev_down
+    this.prev_held = mouse.held
   }
 }
