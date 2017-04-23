@@ -6,6 +6,7 @@
 
 #game-canvas
 {
+  touch-action: none;
   display: block;
   margin: 0 auto;
   background: #eee;

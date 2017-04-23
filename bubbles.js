@@ -11,8 +11,8 @@ var rectangle = canvas.getBoundingClientRect();
 var mouse = {};
 var game_grid = null;
 
-right = canvas.width;
-left = 0
+var game_width = 480;
+var game_height = 300;
 
 var initial_colors = ['red', 'blue', '#eddd2d', '#54e202']
 var add_colors = ['#0ad89a', 'magenta', '#c46907']
@@ -29,7 +29,7 @@ mouse.held = 0;
 document.onmousemove = mouse_move;
 document.body.onmousedown = function(evt) {mouse.down = 1}
 document.body.onmouseup = function(evt) {mouse.down = 0}
-document.addEventListener('touchmove', touch_move, false)
+document.addEventListener('touchmove', touch_move, true)
 document.addEventListener('touchstart', function(evt) {mouse.down = 1; touch_move(evt)}, false)
 document.addEventListener('touchend', function(evt) {mouse.down = 0}, false)
 
@@ -57,6 +57,7 @@ function get_color()
 function touch_move(e)
 {
     var touch = e.touches[0];
+    e.preventDefault()
     rectangle = canvas.getBoundingClientRect();
     var x = touch.pageX - rectangle.left;
     var y = touch.pageY - rectangle.top;
@@ -134,7 +135,7 @@ function draw()
 {
     //clear canvas at start of frame
     clear();
-
+    
     //get current time
     var date = new Date()
     var time = date.getTime()
@@ -197,6 +198,42 @@ function setup()
 
     game_manager = new manager(ball_shooter, game_grid)
     add_object(game_manager, 10)
+}
+
+// left: 37, up: 38, right: 39, down: 40,
+// spacebar: 32, pageup: 33, pagedown: 34, end: 35, home: 36
+var keys = {37: 1, 38: 1, 39: 1, 40: 1};
+
+function preventDefault(e) {
+  e = e || window.event;
+  if (e.preventDefault)
+      e.preventDefault();
+  e.returnValue = false;  
+}
+
+function preventDefaultForScrollKeys(e) {
+    if (keys[e.keyCode]) {
+        preventDefault(e);
+        return false;
+    }
+}
+
+function disableScroll() {
+  if (window.addEventListener) // older FF
+      window.addEventListener('DOMMouseScroll', preventDefault, false);
+  window.onwheel = preventDefault; // modern standard
+  window.onmousewheel = document.onmousewheel = preventDefault; // older browsers, IE
+  window.ontouchmove  = preventDefault; // mobile
+  document.onkeydown  = preventDefaultForScrollKeys;
+}
+
+function enableScroll() {
+    if (window.removeEventListener)
+        window.removeEventListener('DOMMouseScroll', preventDefault, false);
+    window.onmousewheel = document.onmousewheel = null; 
+    window.onwheel = null; 
+    window.ontouchmove = null;  
+    document.onkeydown = null;  
 }
 
 function fillRoundRect(x, y, w, h, radius)
