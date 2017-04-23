@@ -26,7 +26,7 @@ document.onmousemove = mouse_move;
 document.body.onmousedown = function(evt) {mouse.down = 1}
 document.body.onmouseup = function(evt) {mouse.down = 0}
 document.addEventListener('touchmove', touch_move, false)
-document.addEventListener('touchstart', function(evt) {mouse.down = 1; touch_move(evt)}, false)
+document.addEventListener('touchstart', function(evt) {mouse.down = 1}, false)
 document.addEventListener('touchend', function(evt) {mouse.down = 0}, false)
 
 var delay = 20 //delay between frames, 20 ms

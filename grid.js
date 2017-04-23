@@ -207,6 +207,8 @@ function grid(columns, ball_radius, gap, offx, offy)
             this.translate_balls(0, dy)
             this.movement += dy
         }
+        
+        
     }
 
     //Gets the x and y pixels of a location
