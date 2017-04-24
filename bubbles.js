@@ -208,16 +208,14 @@ function draw()
 }
 
 function rescale() {
-  if (sf != 1)
-  {
-    canvas.width = game_width
-    canvas.height = game_height
-    sf = 1
-    canvas.style.zIndex = defaultZ
-    canvas.style.position = 'relative'
-    canvas.style.left = 0
-    canvas.style.top = 0
-  }
+  canvas.width = game_width
+  canvas.height = game_height
+  sf = 1
+  canvas.style.zIndex = defaultZ
+  canvas.style.position = 'relative'
+  ctx.scale(1, 1)
+  canvas.style.left = 0
+  canvas.style.top = 0
   if(fixed) {
       width = window.innerWidth;
       height = window.innerHeight;
