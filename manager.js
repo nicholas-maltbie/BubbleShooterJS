@@ -113,29 +113,34 @@ function manager(ball_shooter, game_grid)
       mouse.down = 0
       mouse.prev_down = 0
       fixed = !fixed;
-      if(fixed) {
-        if (document.documentElement.requestFullscreen) {
-          document.documentElement.requestFullscreen();
-        } else if (document.documentElement.msRequestFullscreen) {
-          document.documentElement.msRequestFullscreen();
-        } else if (document.documentElement.mozRequestFullScreen) {
-          document.documentElement.mozRequestFullScreen();
-        } else if (document.documentElement.webkitRequestFullscreen) {
-          document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+      if( !(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))) {
+        if(fixed) {
+          if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
+          } else if (document.documentElement.msRequestFullscreen) {
+            document.documentElement.msRequestFullscreen();
+          } else if (document.documentElement.mozRequestFullScreen) {
+            document.documentElement.mozRequestFullScreen();
+          } else if (document.documentElement.webkitRequestFullscreen) {
+            document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+          }
         }
-      }
-      else {
-        if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen();
-        } else {
-          document.webkitCancelFullScreen();
+        else {
+          if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+          } else {
+            document.webkitCancelFullScreen();
+          }
         }
+      } else  {
+        window.scrollTo(0, 1);
+        rescale()
       }
   }
 
   this.full_button = new round_button(this.fullscreen, game_width/2 + 75,
       game_height - 40, "full", gap=10, text_size=20, border_radius = 5)
-  add_button(this.full_button)
+  add_button(this.full_button, layer=-8)
 
   this.remove_self = function() {
     remove_object(this.death_line.id)
