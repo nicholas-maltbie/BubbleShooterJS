@@ -38,7 +38,7 @@ canvas.addEventListener('touchend', function(evt) {mouse.down = 0; click_buttons
 //setup rescale listener
 window.onresize = function(evt) {rescale()};
 
-var delay = 20 //delay between frames, 20 ms
+var delay = 10 //delay between frames, 10 ms
 //Get start time
 var prev_time = new Date().getTime()
 
@@ -121,7 +121,15 @@ function add_object(object, layer=0)
     if (!(layer in object_layers)) {
       object_layers[layer] = {}
       layers.push(layer);
-      layers.sort()
+      layers.sort(function(a, b) {
+          aNum = parseInt(a)
+          bNum = parseInt(b);
+          if (aNum == bNum)
+              return 0
+          if (aNum > bNum)
+              return 1
+          return 0
+      })
     }
     //Add object to layer
     object_layers[layer][object.id] = 0
@@ -336,5 +344,5 @@ function roundRect(x, y, w, h, radius, thickness=4)
     ctx.stroke();
 }
 
-//set draw to every 20 ms
+
 setInterval(draw, delay)
