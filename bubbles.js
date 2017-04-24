@@ -266,6 +266,8 @@ function setup()
 
     game_manager = new manager(ball_shooter, game_grid)
     add_object(game_manager, 10)
+
+    rescale()
 }
 
 function draw_button(x, y, content, gap=10, text_size=30, border_radius = 10,
