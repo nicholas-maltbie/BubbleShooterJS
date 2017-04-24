@@ -113,6 +113,18 @@ function manager(ball_shooter, game_grid)
       mouse.down = 0
       mouse.prev_down = 0
       fixed = !fixed;
+      if(!(document.querySelector('meta[name="viewport"]'))) {
+        var meta = document.createElement('meta')
+        meta.name = 'viewport'
+        document.getElementsByTagName('head')[0].appendChild(meta);
+      }
+      if(fixed) {
+        document.querySelector('meta[name="viewport"]').setAttribute("content",
+            "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no");
+      }
+      else {
+        document.querySelector('meta[name="viewport"]').setAttribute("content", "");
+      }
       if( !(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))) {
         if(fixed) {
           if (document.documentElement.requestFullscreen) {
@@ -133,8 +145,8 @@ function manager(ball_shooter, game_grid)
           }
         }
       } else  {
-        window.scrollTo(0, 1);
         rescale()
+
       }
   }
 
