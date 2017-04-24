@@ -30,10 +30,10 @@ mouse.held = 0;
 //setup mouse listener
 document.addEventListener('mousemove', mouse_move, false)
 canvas.addEventListener('mousedown', function(evt) {mouse.down = 1}, false)
-canvas.addEventListener('mouseup', function(evt) {mouse.down = 0}, false)
+canvas.addEventListener('mouseup', function(evt) {mouse.down = 0; click_buttons(evt)}, false)
 document.addEventListener('touchmove', touch_move, false)
 canvas.addEventListener('touchstart', function(evt) {mouse.down = 1; touch_move(evt)}, false)
-canvas.addEventListener('touchend', function(evt) {mouse.down = 0}, false)
+canvas.addEventListener('touchend', function(evt) {mouse.down = 0; click_buttons(evt)}, false)
 
 //setup rescale listener
 window.onresize = function(evt) {rescale()};
@@ -45,6 +45,7 @@ var prev_time = new Date().getTime()
 //List of all things to draw on the screen.
 var game_objects = {}
 var object_layers = {}
+var buttons = {}
 var layers = []
 var added = 0
 var sf = 1
@@ -80,6 +81,36 @@ function mouse_move(e)
     mouse.y = y / sf;
 }
 
+function click_buttons(evt) {
+  if(mouse.down == 0 && mouse.prev_down == 1) {
+    button_ids = Object.keys(buttons);
+    for(var index = 0; index < button_ids.length; index++) {
+      button = buttons[button_ids[index]]
+      if (button.intersect(mouse.x, mouse.y)) {
+        button.fn()
+      }
+    }
+  }
+}
+
+//Adds a button to the screen
+function add_button(button, layer=0)
+{
+  id = add_object(button, layer)
+  buttons[id] = button
+  return id
+}
+
+//Removes a button from the screen
+function remove_button(id)
+{
+  console.log(id)
+  if(id in buttons) {
+    remove_object[id]
+    delete buttons[id]
+  }
+}
+
 //Adds an object and returns the object's id
 function add_object(object, layer=0)
 {
@@ -95,7 +126,7 @@ function add_object(object, layer=0)
     //Add object to layer
     object_layers[layer][object.id] = 0
     added += 1
-    return added
+    return object.id
 }
 
 //Removes an object from the draw hash table
