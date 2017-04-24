@@ -40,7 +40,7 @@ function manager(ball_shooter, game_grid)
   this.prev_mouse_down = 0
 
   var death_height = (this.game_grid.ball_size + this.game_grid.gap) * (this.lose_height - 1) - game_grid.gap
-  death_line = new line(0, death_height, canvas.width, death_height, 1, 'red')
+  death_line = new line(0, death_height, game_width, death_height, 1, 'red')
   add_object(death_line, -1)
 
   this.remove_self = function() {
@@ -106,12 +106,13 @@ function manager(ball_shooter, game_grid)
     }
     ctx.strokeStyle = 'black'
 
-    if(draw_button(canvas.width/2 + 75, canvas.height - 40, "center", gap=10, text_size=20, border_radius = 5))
+    if(draw_button(game_width/2 + 75, game_height - 40, "full", gap=10, text_size=20, border_radius = 5))
     {
         ball_shooter.delay_down = false
         fixed = !fixed;
+        rescale()
     }
-    
+
     if(this.lose) {
       var scoreText = "Score: " + this.score
       ctx.font = "65px Comic Sans MS";
@@ -120,22 +121,22 @@ function manager(ball_shooter, game_grid)
       var w = Math.max(loseWidth, ctx.measureText(scoreText).width)
       ctx.fillStyle = "#5874a0"
       ctx.globalAlpha = 0.88
-      fillRoundRect(canvas.width / 2 - w / 2 - 10, canvas.height / 2 - 100, w + 20, 175, 10)
+      fillRoundRect(game_width / 2 - w / 2 - 10, game_height / 2 - 100, w + 20, 175, 10)
       ctx.globalAlpha = 1
       ctx.fillStyle = "black"
-      roundRect(canvas.width / 2 - w / 2 - 10, canvas.height / 2 - 100, w + 20, 175, 10)
+      roundRect(game_width / 2 - w / 2 - 10, game_height / 2 - 100, w + 20, 175, 10)
       ctx.lineWidth = 3
       ctx.font = "65px Comic Sans MS";
       ctx.fillStyle = "white";
       ctx.textAlign = "center";
-      ctx.fillText("You Lose", canvas.width/2, canvas.height/2 - 25);
-      ctx.strokeText("You Lose", canvas.width/2, canvas.height/2 - 25);
+      ctx.fillText("You Lose", game_width/2, game_height/2 - 25);
+      ctx.strokeText("You Lose", game_width/2, game_height/2 - 25);
       ctx.lineWidth = 2
       ctx.font = "40px Comic Sans MS";
-      ctx.fillText(scoreText, canvas.width / 2, canvas.height/2 + 15)
-      ctx.strokeText(scoreText, canvas.width / 2, canvas.height/2 + 15)
-      
-      if(draw_button(canvas.width / 2, canvas.height / 2 + 25, 'retry'))
+      ctx.fillText(scoreText, game_width / 2, game_height/2 + 15)
+      ctx.strokeText(scoreText, game_width / 2, game_height/2 + 15)
+
+      if(draw_button(game_width / 2, game_height / 2 + 25, 'retry'))
       {
           reset();
       }
@@ -147,10 +148,10 @@ function manager(ball_shooter, game_grid)
       ctx.textAlign = "left"
       var scoreText = "Score: " + this.score
       var nextRow = "Next: " + Math.ceil(this.expand - this.shots)
-      ctx.fillText(scoreText, canvas.width - ctx.measureText(scoreText).width - 10, canvas.height - 10)
-      ctx.strokeText(scoreText, canvas.width - ctx.measureText(scoreText).width - 10, canvas.height - 10)
-      ctx.fillText(nextRow, 10, canvas.height - 10)
-      ctx.strokeText(nextRow, 10, canvas.height - 10)
+      ctx.fillText(scoreText, game_width - ctx.measureText(scoreText).width - 10, game_height - 10)
+      ctx.strokeText(scoreText, game_width - ctx.measureText(scoreText).width - 10, game_height - 10)
+      ctx.fillText(nextRow, 10, game_height - 10)
+      ctx.strokeText(nextRow, 10, game_height - 10)
     }
     this.prev_mouse_down = mouse.down
   }
