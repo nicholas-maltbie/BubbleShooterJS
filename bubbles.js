@@ -12,10 +12,10 @@ var mouse = {};
 var game_grid = null;
 
 var game_width = 480;
-var game_height = 300;
+var game_height = 320;
 var fixed = false;
 
-var defaultZ = canvas.style.zIndex 
+var defaultZ = canvas.style.zIndex
 
 var initial_colors = ['red', 'blue', '#eddd2d', '#54e202']
 var add_colors = ['#00d8ff', 'magenta', '#c46907']
@@ -35,6 +35,9 @@ document.addEventListener('touchmove', touch_move, false)
 canvas.addEventListener('touchstart', function(evt) {mouse.down = 1; touch_move(evt)}, false)
 canvas.addEventListener('touchend', function(evt) {mouse.down = 0}, false)
 
+//setup rescale listener
+window.onresize = function(evt) {rescale()};
+
 var delay = 20 //delay between frames, 20 ms
 //Get start time
 var prev_time = new Date().getTime()
@@ -44,6 +47,7 @@ var game_objects = {}
 var object_layers = {}
 var layers = []
 var added = 0
+var sf = 1
 
 //Max elapsed time per frame
 var max_elapsed = 25
@@ -62,8 +66,8 @@ function touch_move(e)
     rectangle = canvas.getBoundingClientRect();
     var x = touch.clientX - rectangle.left;
     var y = touch.clientY - rectangle.top;
-    mouse.x = x;
-    mouse.y = y;
+    mouse.x = x / sf;
+    mouse.y = y / sf;
 }
 
 //function to track mouse movement
@@ -72,8 +76,8 @@ function mouse_move(e)
     rectangle = canvas.getBoundingClientRect();
     var x = e.clientX - rectangle.left;
     var y = e.clientY - rectangle.top;
-    mouse.x = x;
-    mouse.y = y;
+    mouse.x = x / sf;
+    mouse.y = y / sf;
 }
 
 //Adds an object and returns the object's id
@@ -116,7 +120,8 @@ function reset()
   ball_shooter.remove_self()
   game_grid.remove_self()
 
-  ball_shooter = new shooter(rectangle.width / 2, rectangle.height - 20, 10, 75, 400, get_color);
+  //add ball shooter
+  ball_shooter = new shooter(game_width / 2, game_height - 20, 10, 75, 400, get_color);
   add_object(ball_shooter, -1)
   ball_shooter.load(get_color);
 
@@ -136,7 +141,7 @@ function draw()
 {
     //clear canvas at start of frame
     clear();
-    
+
     //get current time
     var date = new Date()
     var time = date.getTime()
@@ -156,39 +161,51 @@ function draw()
       }
     })
 
-    
-    if(fixed) {
-        canvas.style.position = 'fixed'
-        canvas.style.zIndex = '999'
-        canvas.style.left = window.innerWidth / 2 - canvas.width / 2
-        canvas.style.top = window.innerHeight / 2 - canvas.height / 2
-    }
-    else {
-        canvas.style.zIndex = defaultZ
-        canvas.style.position = 'relative'
-        canvas.style.left = 0
-        canvas.style.top = 0
-    }
-    
     //update mouse
     mouse.prev_down = mouse.down
-    if (mouse.down) 
+    if (mouse.down)
     {
         mouse.held += elapsed
     }
-    else 
+    else
     {
         mouse.held = 0
     }
-    
+
     //update previous time
     prev_time = time
+}
+
+function rescale() {
+  if (sf != 1)
+  {
+    canvas.width = game_width
+    canvas.height = game_height
+    sf = 1
+    canvas.style.zIndex = defaultZ
+    canvas.style.position = 'relative'
+    canvas.style.left = 0
+    canvas.style.top = 0
+  }
+  if(fixed) {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      temp_sf = Math.min(width / canvas.width, height / canvas.height)
+      sf = temp_sf
+      canvas.width = canvas.width * sf
+      canvas.height = canvas.height * sf
+      ctx.scale(sf, sf)
+      canvas.style.position = 'fixed'
+      canvas.style.zIndex = '999'
+      canvas.style.left = window.innerWidth / 2 - canvas.width / 2
+      canvas.style.top = window.innerHeight / 2 - canvas.height / 2
+  }
 }
 
 //This function will clear the canvas between frames
 function clear()
 {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, game_width, game_height);
 }
 
 var ball_shooter
@@ -199,7 +216,7 @@ var game_manager
 function setup()
 {
     //add ball shooter
-    ball_shooter = new shooter(rectangle.width / 2, rectangle.height - 20, 10, 75, 400, get_color);
+    ball_shooter = new shooter(game_width / 2, game_height - 20, 10, 75, 400, get_color);
     add_object(ball_shooter, -1)
     ball_shooter.load(get_color);
 
@@ -214,9 +231,9 @@ function setup()
     add_object(game_manager, 10)
 }
 
-function draw_button(x, y, content, gap=10, text_size=30, border_radius = 10, 
-    border_thickness=3, font="Comic Sans MS", fill='#eee', text_color='white', 
-    fill_hover='#ccc', text_hover='#ddd', fill_down='#aaa', text_down='#bbb', 
+function draw_button(x, y, content, gap=10, text_size=30, border_radius = 10,
+    border_thickness=3, font="Comic Sans MS", fill='#eee', text_color='white',
+    fill_hover='#ccc', text_hover='#ddd', fill_down='#aaa', text_down='#bbb',
     border='black', text_border='black')
 {
     ctx.textAlign = "center";
@@ -224,7 +241,7 @@ function draw_button(x, y, content, gap=10, text_size=30, border_radius = 10,
     ctx.font = text_size + "px " + font;
     var retry = content
     var box_width = ctx.measureText(retry).width
-    
+
     if(mouse.x >= x - box_width / 2 - gap &&
         mouse.x <= x - box_width / 2 + box_width + gap &&
         mouse.y >= y && mouse.y <= y + text_size + gap)
@@ -241,10 +258,10 @@ function draw_button(x, y, content, gap=10, text_size=30, border_radius = 10,
         }
     }
     ctx.fillStyle = fill;
-    fillRoundRect(x - box_width / 2 - gap, y, 
+    fillRoundRect(x - box_width / 2 - gap, y,
         box_width + gap * 2, text_size + gap, border_radius)
     ctx.fillStyle = border
-    roundRect(x - box_width / 2 - gap, y, 
+    roundRect(x - box_width / 2 - gap, y,
         box_width + gap * 2, text_size + gap, border_radius, border_thickness)
     ctx.fillStyle = text_color
     ctx.fillText(retry, x, y + text_size)
