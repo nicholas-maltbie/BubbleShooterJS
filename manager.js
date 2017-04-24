@@ -4,9 +4,72 @@
  * manager.js - game moderator file
  */
 
+function round_button(fn, x, y, content, gap=10, text_size=30, border_radius = 10,
+    border_thickness=3, font="Comic Sans MS", fill='#eee', text_color='white',
+    fill_hover='#ccc', text_hover='#ddd', fill_down='#aaa', text_down='#bbb',
+    border='black', text_border='black')
+{
+    this.fn = fn;
+    this.x = x;
+    this.y = y;
+    this.content = content;
+    this.gap = gap;
+    this.text_size = text_size;
+    this.border_radius = border_radius;
+    this.border_thickness = border_thickness;
+    this.font = font;
+    this.fill = fill;
+    this.text_color = text_color;
+    this.fill_hover = fill_hover;
+    this.text_hover = text_hover;
+    this.fill_down = fill_down;
+    this.text_down = text_down;
+    this.border = border;
+    this.text_border = text_border;
+
+    this.intersect = function(x, y) {
+      var retry = this.content
+      var box_width = ctx.measureText(retry).width
+      return (x >= this.x - box_width / 2 - this.gap &&
+          x <= this.x - box_width / 2 + box_width + this.gap &&
+          y >= this.y && y <= this.y + this.text_size + this.gap)
+    }
+
+    this.draw = function(elapsed) {
+      ctx.textAlign = "center";
+      ctx.font = this.text_size + "px " + this.font;
+      var retry = this.content
+      var box_width = ctx.measureText(retry).width
+
+      temp_fill = this.fill
+      temp_text_color = this.text_color
+
+      if(this.intersect(mouse.x, mouse.y))
+      {
+          temp_fill = this.fill_hover
+          temp_text_color = this.text_hover
+          if(mouse.down) {
+              temp_fill = this.fill_down
+              temp_text_color = this.text_down
+          }
+      }
+      ctx.fillStyle = temp_fill;
+      fillRoundRect(this.x - box_width / 2 - this.gap, this.y,
+          box_width + this.gap * 2, this.text_size + this.gap, this.border_radius)
+      ctx.strokeStyle = this.border
+      roundRect(this.x - box_width / 2 - this.gap, this.y,
+          box_width + this.gap * 2, this.text_size + this.gap, this.border_radius, this.border_thickness)
+      ctx.fillStyle = temp_text_color
+      ctx.fillText(retry, this.x, this.y + this.text_size)
+      ctx.strokeStyle = this.text_border
+      ctx.lineWidth = 1
+      ctx.strokeText(retry, this.x, this.y + this.text_size)
+    }
+}
+
 //define function for line object
 function line(x1, y1, x2, y2, thickness, color) {
-  this.draw = function() {
+  this.draw = function(elapsed) {
     //Draw death line
     ctx.strokeStyle = color
     ctx.lineWidth = thickness
@@ -36,19 +99,57 @@ function manager(ball_shooter, game_grid)
   this.score = 0
   this.pop_score_fn = function (pop) {return Math.floor(pop ** 1.5)}
   this.extra_score_fn = function (extra) {return extra}
+  this.kill_frame = false
 
   this.prev_mouse_down = 0
 
   var death_height = (this.game_grid.ball_size + this.game_grid.gap) * (this.lose_height - 1) - game_grid.gap
-  death_line = new line(0, death_height, game_width, death_height, 1, 'red')
-  add_object(death_line, -1)
+  this.death_line = new line(0, death_height, game_width, death_height, 1, 'red')
+  add_object(this.death_line, -1)
+
+  this.fullscreen = function() {
+      ball_shooter.delay_down = false
+      this.kill_frame = true
+      mouse.down = 0
+      mouse.prev_down = 0
+      fixed = !fixed;
+      if(fixed) {
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen();
+        } else if (document.documentElement.msRequestFullscreen) {
+          document.documentElement.msRequestFullscreen();
+        } else if (document.documentElement.mozRequestFullScreen) {
+          document.documentElement.mozRequestFullScreen();
+        } else if (document.documentElement.webkitRequestFullscreen) {
+          document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+        }
+      }
+      else {
+        if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+        } else {
+          document.webkitCancelFullScreen();
+        }
+      }
+  }
+
+  this.full_button = new round_button(this.fullscreen, game_width/2 + 75,
+      game_height - 40, "full", gap=10, text_size=20, border_radius = 5)
+  add_button(this.full_button)
 
   this.remove_self = function() {
-    remove_object(death_line.id)
+    remove_object(this.death_line.id)
     remove_object(this.id)
+    remove_button(this.full_button.id)
   }
 
   this.draw = function(elapsed) {
+    if(this.kill_frame) {
+      ball_shooter.delay_down = false
+      this.kill_frame = false
+      rescale()
+    }
+
     //If a ball has been fired and is in motion
     if(this.ball_shooter.fired != null)
     {
@@ -105,13 +206,6 @@ function manager(ball_shooter, game_grid)
       }
     }
     ctx.strokeStyle = 'black'
-
-    if(draw_button(game_width/2 + 75, game_height - 40, "full", gap=10, text_size=20, border_radius = 5))
-    {
-        ball_shooter.delay_down = false
-        fixed = !fixed;
-        rescale()
-    }
 
     if(this.lose) {
       var scoreText = "Score: " + this.score
