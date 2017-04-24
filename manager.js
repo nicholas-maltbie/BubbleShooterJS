@@ -145,8 +145,9 @@ function manager(ball_shooter, game_grid)
           }
         }
       } else  {
-        rescale()
-
+        if(fixed) {
+          rescale()
+        }
       }
   }
 
