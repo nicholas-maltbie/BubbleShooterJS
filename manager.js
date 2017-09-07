@@ -94,9 +94,11 @@ function manager(ball_shooter, game_grid)
   this.wait = 0
   this.shots = 0
   this.lose = false
+  this.win = false
   this.lose_height = 14
   this.cycle = false
   this.score = 0
+  this.rows_to_victory = 8
   this.pop_score_fn = function (pop) {return Math.floor(pop ** 1.5)}
   this.extra_score_fn = function (extra) {return extra}
   this.kill_frame = false
@@ -213,43 +215,86 @@ function manager(ball_shooter, game_grid)
               game_colors.push(add_colors[index])
             }
           }
-          this.game_grid.add_row(get_color)
+
+          if (this.rows_to_victory > 0) {
+            this.game_grid.add_row(get_color)
+            this.rows_to_victory -= 1
+          }
+          else {
+            add_colors = this.game_grid.get_all_colors()
+          }
         }
         this.wait = 0
         if (game_grid.height() >= this.lose_height) {
           this.lose = true;
           this.ball_shooter.lost = true;
         }
+        if (this.rows_to_victory == 0 && this.game_grid.size() == 0 ) {
+          this.lose = true
+          this.ball_shooter.lost = true;
+          this.win = true
+        }
       }
     }
     ctx.strokeStyle = 'black'
 
     if(this.lose) {
-      var scoreText = "Score: " + this.score
-      ctx.font = "65px Comic Sans MS";
-      var loseWidth = ctx.measureText("You Lose").width
-      ctx.font = "40px Comic Sans MS";
-      var w = Math.max(loseWidth, ctx.measureText(scoreText).width)
-      ctx.fillStyle = "#5874a0"
-      ctx.globalAlpha = 0.88
-      fillRoundRect(game_width / 2 - w / 2 - 10, game_height / 2 - 100, w + 20, 175, 10)
-      ctx.globalAlpha = 1
-      ctx.fillStyle = "black"
-      roundRect(game_width / 2 - w / 2 - 10, game_height / 2 - 100, w + 20, 175, 10)
-      ctx.lineWidth = 3
-      ctx.font = "65px Comic Sans MS";
-      ctx.fillStyle = "white";
-      ctx.textAlign = "center";
-      ctx.fillText("You Lose", game_width/2, game_height/2 - 25);
-      ctx.strokeText("You Lose", game_width/2, game_height/2 - 25);
-      ctx.lineWidth = 2
-      ctx.font = "40px Comic Sans MS";
-      ctx.fillText(scoreText, game_width / 2, game_height/2 + 15)
-      ctx.strokeText(scoreText, game_width / 2, game_height/2 + 15)
+      if (this.win) {
+        var scoreText = "Score: " + this.score
+        ctx.font = "65px Comic Sans";
+        var loseWidth = ctx.measureText("You Win").width
+        ctx.font = "40px Comic Sans";
+        var w = Math.max(loseWidth, ctx.measureText(scoreText).width)
+        ctx.fillStyle = "#5874a0"
+        ctx.globalAlpha = 0.88
+        fillRoundRect(game_width / 2 - w / 2 - 10, game_height / 2 - 100, w + 20, 175, 10)
+        ctx.globalAlpha = 1
+        ctx.fillStyle = "black"
+        roundRect(game_width / 2 - w / 2 - 10, game_height / 2 - 100, w + 20, 175, 10)
+        ctx.lineWidth = 3
+        ctx.font = "65px Comic Sans MS";
+        ctx.fillStyle = "white";
+        ctx.textAlign = "center";
+        ctx.fillText("You Win", game_width/2, game_height/2 - 25);
+        ctx.strokeText("You Win", game_width/2, game_height/2 - 25);
+        ctx.lineWidth = 2
+        ctx.font = "40px Comic Sans";
+        ctx.fillText(scoreText, game_width / 2, game_height/2 + 15)
+        ctx.strokeText(scoreText, game_width / 2, game_height/2 + 15)
 
-      if(draw_button(game_width / 2, game_height / 2 + 25, 'retry'))
-      {
-          reset();
+        if(draw_button(game_width / 2, game_height / 2 + 25, 'retry'))
+        {
+            reset();
+        }
+      }
+      else {
+
+        var scoreText = "Score: " + this.score
+        ctx.font = "65px Comic Sans";
+        var loseWidth = ctx.measureText("You Lose").width
+        ctx.font = "40px Comic Sans";
+        var w = Math.max(loseWidth, ctx.measureText(scoreText).width)
+        ctx.fillStyle = "#5874a0"
+        ctx.globalAlpha = 0.88
+        fillRoundRect(game_width / 2 - w / 2 - 10, game_height / 2 - 100, w + 20, 175, 10)
+        ctx.globalAlpha = 1
+        ctx.fillStyle = "black"
+        roundRect(game_width / 2 - w / 2 - 10, game_height / 2 - 100, w + 20, 175, 10)
+        ctx.lineWidth = 3
+        ctx.font = "65px Comic Sans";
+        ctx.fillStyle = "white";
+        ctx.textAlign = "center";
+        ctx.fillText("You Lose", game_width/2, game_height/2 - 25);
+        ctx.strokeText("You Lose", game_width/2, game_height/2 - 25);
+        ctx.lineWidth = 2
+        ctx.font = "40px Comic Sans";
+        ctx.fillText(scoreText, game_width / 2, game_height/2 + 15)
+        ctx.strokeText(scoreText, game_width / 2, game_height/2 + 15)
+
+        if(draw_button(game_width / 2, game_height / 2 + 25, 'retry'))
+        {
+            reset();
+        }
       }
     }
     else {
@@ -258,11 +303,13 @@ function manager(ball_shooter, game_grid)
       ctx.fillStyle = "white";
       ctx.textAlign = "left"
       var scoreText = "Score: " + this.score
-      var nextRow = "Next: " + Math.ceil(this.expand - this.shots)
       ctx.fillText(scoreText, game_width - ctx.measureText(scoreText).width - 10, game_height - 10)
       ctx.strokeText(scoreText, game_width - ctx.measureText(scoreText).width - 10, game_height - 10)
-      ctx.fillText(nextRow, 10, game_height - 10)
-      ctx.strokeText(nextRow, 10, game_height - 10)
+      if (this.rows_to_victory > 0) {
+        var nextRow = "Next: " + Math.ceil(this.expand - this.shots)
+        ctx.fillText(nextRow, 10, game_height - 10)
+        ctx.strokeText(nextRow, 10, game_height - 10)
+      }
     }
     this.prev_mouse_down = mouse.down
   }
