@@ -11,9 +11,14 @@ var rectangle = canvas.getBoundingClientRect();
 var mouse = {};
 var game_grid = null;
 
-var game_width = 480;
-var game_height = 320;
+var game_width = canvas.width;
+var game_height = canvas.height;
 var fixed = false;
+
+window.addEventListener('resize', function (e) {
+	game_width = canvas.width
+	game_height = canvas.height
+})
 
 var defaultZ = canvas.style.zIndex
 
