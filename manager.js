@@ -98,7 +98,7 @@ function manager(ball_shooter, game_grid)
   this.lose_height = 14
   this.cycle = false
   this.score = 0
-  this.rows_to_victory = 16
+  this.rows_to_victory = 100000
   this.pop_score_fn = function (pop) {return Math.floor(pop ** 1.5)}
   this.extra_score_fn = function (extra) {return extra}
   this.kill_frame = false
